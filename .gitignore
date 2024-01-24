@@ -127,3 +127,35 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.ipynb_checkpoints/*
+
+#data
+*.nexus
+*.tsv
+#db
+*.sqlitedb
+
+#file
+*.pdf
+
+# Packages 
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# OS generated files 
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db.DS_Store
+
+#folder
+data 
