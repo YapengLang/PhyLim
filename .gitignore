@@ -159,3 +159,6 @@ Thumbs.db.DS_Store
 
 #folder
 data 
+
+#vscode settings
+.vscode/

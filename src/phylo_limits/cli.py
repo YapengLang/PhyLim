@@ -33,7 +33,6 @@ from phylo_limits.fit_stats import get_bound_viol, get_dlc_viol, get_transit
 from phylo_limits.check_dlc import check_chainsaw
 from phylo_limits.check_ident import check_ident, check_all_psubs
 from phylo_limits.find_saw import find_saw
-from phylo_limits.entro_meas import D_entropy_t_stat, only_varsites, de_gap
 from phylo_limits.parse_bad_phylip import load_bad_phylip
 
 from contextlib import redirect_stderr
