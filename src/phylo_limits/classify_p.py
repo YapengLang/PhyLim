@@ -1,13 +1,13 @@
 import numpy
 from cogent3.util.dict_array import DictArray
+from cogent3.app.result import model_result
 from phylo_limits import check_dlc, delta_col
 
 import warnings
 
+#TODO: this should get a cogent3 likelihood function as input.. the arguments are unnecessary. 
 def check_all_psubs(
-    psubs_dict: dict,
-    model_name: str,
-    motif_probs: DictArray,
+    model_res:model_result,
     strictly=True,
     label_L=False,
 ) -> dict:
@@ -15,6 +15,9 @@ def check_all_psubs(
     Parameter: `strictly` controls whether take I as DLC, if False, make it as DLC and warn it
                `label_L` if True, label a limit matrix as Limit instead of Sympathetic"""
     # motif_probs=lf.get_motif_probs_by_node()
+    psubs_dict = model_res.lf.get_all_psubs()
+    model_name = model_res.name
+    motif_probs = model_res.lf.get_motif_probs_by_node()
 
     new_dict = {}
     for key, value in psubs_dict.items():

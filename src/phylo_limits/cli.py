@@ -71,5 +71,11 @@ _outpath = click.option(
 )
 
 
+@main.command(no_args_is_help=True)
+def ident():
+    ...
+
+
+
 if __name__ == "__main__":
     main()

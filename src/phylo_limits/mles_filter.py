@@ -62,7 +62,7 @@ def make_model_app(
             unique_trees=True,
         )
 
-
+# 30Jan 24 should be del
 @define_app
 def fit_core_E(algn: AlignedSeqsType, name: str) -> model_result:
     # get tree for each locus
