@@ -1,15 +1,17 @@
+#TODO: this module should be separated by two parts: 1) for matrix manuplition 2) for projetcting future
 from typing import Any
+
 import numpy
 import scipy
+
 from cogent3 import make_table, maths
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
 from cogent3.app.typing import SerialisableType
-
-
 from numpy.linalg import eig, inv  # , sum
 from numpy.ma import dot as ma_dot
 from numpy.ma.core import array, diag
+
 
 expm = scipy.linalg.expm
 

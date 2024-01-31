@@ -77,7 +77,7 @@ def reroot(newick_tree: str, root: str) -> PhyloNode:
 
     return make_tree(tree_str)
 
-
+#TODO: should be del 
 def check_all_psubs(
     psubs_dict: dict,
     model_name: str,
@@ -194,7 +194,7 @@ def check_ident_rerooting(n, tree_str, which=True) -> bool or set:
                 fine_nodes += LINKED_NODES
         return True
 
-# remove the global variable, change it into a class 7/12/2023, the class should be able to change into
+# TODO:remove the global variable, change it into a class 7/12/2023, the class should be able to change into
 # json. 
 def check_ident(
     lf: AlignmentLikelihoodFunction, strictly=True, which=False
