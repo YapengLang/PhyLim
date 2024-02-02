@@ -3,7 +3,7 @@ from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.dict_array import DictArray
 from cogent3.core.tree import PhyloNode
 from cogent3 import make_tree
-from phylo_limits import check_dlc, delta_col
+from phylo_limits import delta_col, p_classifier
 import numpy
 import copy
 
@@ -98,7 +98,7 @@ def check_all_psubs(
             else motif_probs[key[0]]
         )
 
-        if check_dlc.check_I(value):
+        if p_classifier.check_I(value):
             if strictly == True:
                 new_dict[key] = {"value": value, "class": "Identity"}
             else:
@@ -108,11 +108,11 @@ def check_all_psubs(
                 new_dict[key] = {"value": value, "class": "DLC"}
             continue
 
-        elif check_dlc.check_dlc(p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])):
+        elif p_classifier.check_dlc(p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])):
             new_dict[key] = {"value": value, "class": "DLC"}
             continue
 
-        elif check_dlc.check_chainsaw(
+        elif p_classifier.check_chainsaw(
             p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])
         ):
 
@@ -120,7 +120,7 @@ def check_all_psubs(
             continue
 
         else:
-            if check_dlc.check_limit(
+            if p_classifier.check_limit(
                 p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])
             ):
                 warnings.warn("Fit contains Limit matrix!")
