@@ -189,33 +189,3 @@ def get_sub_num(result: model_result) -> SerialisableType:
     )
     return make_table(header, data=rows).to_json()
 
-
-class CalcMinEnsFit:
-    def __init__(self, p0, q, expected) -> None:
-        self.p0 = p0
-        self.q = q
-        self.expected = expected
-
-    def __call__(self, new_tau) -> Any:
-        return (
-            maths.matrix_exponential_integration.expected_number_subs(
-                p0=self.p0, Q=self.q, t=new_tau
-            )
-            - self.expected
-        )
-
-
-def tau_TX(p0, q, tau=None, ens=None):
-    """transform tau into ens, or backverse"""
-    if tau is None and ens is None:
-        raise ValueError("at least one value provided")
-    if tau is not None and ens is not None:
-        raise ValueError("too many values provided!")
-    if tau:
-        return maths.matrix_exponential_integration.expected_number_subs(
-            p0=p0, Q=q, t=tau
-        )
-    if ens:
-        calc = CalcMinEnsFit(p0=p0, q=q, expected=ens)
-        x1 = 1 if 0 < ens < 1 else 50
-        return scipy.optimize.newton(calc, x0=0, x1=x1, maxiter=1000)

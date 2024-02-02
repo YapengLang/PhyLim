@@ -1,16 +1,17 @@
 #TODO: this file will be filled with functions for projecting the fit: for given likelihood function, report the ens where DLC is broken.
 #       (it should project only matrix who is DLC)
-from cogent3.parse.table import load_delimited
-from cogent3 import get_app, maths
-from tqdm import tqdm
-
+import click
 import numpy
 import scipy
 
-import click
+from cogent3 import get_app, maths
+from cogent3.parse.table import load_delimited
+from cogent3.app.result import model_result
+from tqdm import tqdm
+ 
 
-from phylo_limits.check_dlc import check_chainsaw
-from phylo_limits.delta_col import get_stat_pi_via_eigen
+from phylo_limits.delta_col import get_stat_pi_via_eigen, get_sub_num
+from phylo_limits.p_classifier import check_chainsaw
 
 
 def num_saw_srch(t, q, p0, tau, model_name):
@@ -75,9 +76,9 @@ def find_saw(infile: click.Path, dict_of_members):
 
 
 
-# input model_result, validate matrix, and output list for only non-dlc.
-@define_app
-def get_dlc_viol(result: model_result) -> list:
+# input model_result, validate matrix, and output list for only non-dlc. #TODO: is it necessary? 
+# @define_app
+# def get_dlc_viol(result: model_result) -> list:
     # unique_id = result.source
     edges = [k[0] for k in result.lf.get_all_psubs().keys()]
     rows = []
@@ -107,3 +108,13 @@ def get_dlc_viol(result: model_result) -> list:
             row = [name] + [t] + [ens] + [delta_col] + [1] + [0]
         rows.append(row)
     return rows
+
+
+
+def project(model_res:model_result) -> ...:
+    """assumption: the lf is identifiable.
+        description: it will calc every Q in a lf, and return a table consist of the tau_ point
+    """
+    project_app = get_sub_num()
+    tbl = project_app(model_res)
+    return tbl

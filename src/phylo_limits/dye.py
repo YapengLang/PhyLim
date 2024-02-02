@@ -1,9 +1,13 @@
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
+from cogent3.app.result import model_result
+from phylo_limits.p_classifier import check_all_psubs
 
 #TODO: colouring process lack exact groups
-def colour_edges(tree: PhyloNode, psubs_dict: dict) -> Dendrogram:
+def colour_edges(model_res:model_result) -> Dendrogram:
     "a func accept a tree (in phynode ), output the colored edge based on the label dict"
+    tree=model_res.tree
+    psubs_dict=check_all_psubs(model_res)
     edge_Sympathetic=[]
     edge_I = []
     edge_D = []
