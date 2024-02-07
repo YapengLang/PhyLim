@@ -3,7 +3,7 @@ import numpy
 from cogent3 import get_app
 from cogent3.app.result import model_result
 from cogent3.app.typing import AlignedSeqsType, SerialisableType
-
+from cogent3.app.composable import define_app
 
 # parameters of model fitting
 RATE_UPPER = 200
@@ -53,7 +53,7 @@ def model_init(
     )
 
 
-
+@define_app
 def fit(algn:AlignedSeqsType, model:str, het=False) -> model_result:
     """input: a cogent3 alignment
         output: a cogent3 model result object 
@@ -72,5 +72,3 @@ def fit(algn:AlignedSeqsType, model:str, het=False) -> model_result:
     return modeller(algn)
 
 
-
-#TODO: # and also feature of fitting all alignments as a data store for command line using. 
