@@ -2,33 +2,11 @@ from pathlib import Path
 
 import click
 
+from cogent3 import get_app, open_data_store
 from scitrack import CachingLogger
 
-import glob
-import numpy
-import scipy
-from tqdm import tqdm
-from cogent3 import (
-    get_app,
-    open_data_store,
-    make_table,
-    maths,
-    make_aligned_seqs,
-    load_aligned_seqs,
-)
-from cogent3.parse.table import load_delimited
-from cogent3.app.typing import SerialisableType, AlignedSeqsType
-from cogent3.app.composable import define_app, NotCompleted
-from cogent3.app.data_store import DataMember
-from cogent3.app.result import model_result
-
-from phylo_limits.project import project
-from phylo_limits.check_ident import check_ident
-from phylo_limits.diagnose import diagonse
 from phylo_limits.fit import fit
 
-from contextlib import redirect_stderr
-import io
 
 __author__ = "Yapeng Lang"
 __copyright__ = "Copyright 2016-2023, Yapeng Lang"
@@ -62,30 +40,6 @@ _outpath = click.option(
 )
 
 
-@define_app
-class PhyloLimitStat:
-
-    def __init__(self,unique_id:str,model_name:str,identifiability:bool,boundary_values:dict,projection:dict):
-        self.unique_id = unique_id
-        self.model_name = model_name
-        self.identifiability = identifiability
-        self.boundary_values = boundary_values
-        self.projection = projection
-
-
-    def to_rich_dict(self) -> dict:
-        return ...  
-
-@define_app
-def app_for_all_infor(model_res:model_result) -> dict:
-    
-    all_infor = PhyloLimitStat()
-    all_infor.unique_id = ...
-    all_infor.model_name = model_res.name
-    all_infor.identifiability = check_ident(model_res.lf)
-    all_infor.boundary_values = diagonse(model_res)
-    all_infor.projection = project(model_res)
-    return all_infor.to_rich_dict()
 
 @main.command(no_args_is_help=True)
 @click.option(

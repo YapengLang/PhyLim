@@ -16,6 +16,10 @@ class PhyloLimitRec:
         self.model_name = model_res.name
         self.tree = model_res.tree
         self.psub_dict = model_res.lf.get_all_psubs()
+        self.qsub_dict = model_res.lf.get_all_rate_matrices(calibrated=False)
+        self.qcsub_dict = model_res.lf.get_all_rate_matrices(calibrated=True)
+        self.motif_probs = model_res.lf.get_motif_probs_by_node()
+        self.lengths = model_res.lf.get_param_value
 
     def record(self):    
         self.identifiability = check_ident(...)

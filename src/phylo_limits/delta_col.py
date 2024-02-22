@@ -4,10 +4,7 @@ from typing import Any
 import numpy
 import scipy
 
-from cogent3 import make_table, maths
-from cogent3.app.composable import define_app
-from cogent3.app.result import model_result
-from cogent3.app.typing import SerialisableType
+from cogent3 import maths
 from numpy.linalg import eig, inv  # , sum
 from numpy.ma import dot as ma_dot
 from numpy.ma.core import array, diag
@@ -27,13 +24,15 @@ OFFDIAG = mask
 def min_diff_from_diag(
     m: numpy.ndarray, diag_indices: numpy.ndarray, off_diag_indices: numpy.ndarray
 ) -> numpy.ndarray:
-    """compute difference for each column between diagonal and
-    the largest off-diagonal element
-
+    """
     Args:
         m (numpy.ndarray): a matrix
         diag_indices (numpy.ndarray): diagonal indices
         off_diag_indices (numpy.ndarray): off-diagonal indices in boolean
+
+    Des:
+        compute difference for each column between diagonal and
+        the largest off-diagonal element
     """
     return m[diag_indices] - m.max(axis=0, where=off_diag_indices, initial=m.min())
 
@@ -129,63 +128,4 @@ def invalid_dlc(delta: float, limit, to_check) -> bool:
     # the doubled machine precison makes sure is truly a dlc violation
     return bool(valid_bysect(delta) and not valid_symp(limit, to_check))
     # check the deviation #todo: check the avail of 0.5*_eps
-
-
-def get_node_parent(result: model_result, node: str) -> str:
-    """given a node, seek its parent in tree"""
-    return result.lf.tree.get_node_matching_name(node).parent.name
-
-
-@define_app
-def get_sub_num(result: model_result) -> SerialisableType:
-    """predict the dlc violating point before the limit for a rate matrix run on edge"""
-    if len(result.lf.get_all_rate_matrices()) > 1:
-        edges = [k[0] for k in result.lf.get_all_psubs().keys()]
-    else:
-        edges = [result.lf.tree.children[0].name]  # random edge linked to 'root'
-    rows = []
-    for name in edges:
-        Q = result.lf.get_rate_matrix_for_edge(
-            name=name, calibrated=False
-        )  # load each Q, no calibration
-
-        estimate = EstimateMinColDelta(Q)
-        estimate.optimise()
-
-        tau = estimate.stat[0]
-        delta_col = estimate.fit
-        p0 = result.lf.get_motif_probs_by_node()[
-            get_node_parent(result=result, node=name)
-        ]
-
-        sub_num = maths.matrix_exponential_integration.expected_number_subs(
-            p0=p0, Q=Q, t=tau
-        )  # trans tau to sub_num
-
-        P = expm(estimate.calc.Q * tau)
-
-        if result.name in ["ssGN", "GN"]:
-            pi = get_stat_pi_via_eigen(P)
-            val = invalid_dlc(
-                delta_col,
-                limit=numpy.array([pi, pi, pi, pi]),
-                to_check=P,
-            )
-        else:
-            val = invalid_dlc(
-                delta_col,
-                limit=numpy.array([p0, p0, p0, p0]),
-                to_check=P,
-            )  # check if the tau_ estimated render the p into a sympathetic matrix not in limit
-
-        row = [name] + [sub_num] + [tau] + [delta_col] + [val]
-        rows.append(row)
-    header = (
-        ["name"]
-        + ["substitution number"]
-        + ["tau_"]
-        + ["delta column"]
-        + ["is tau_ transition point"]
-    )
-    return make_table(header, data=rows).to_json()
 

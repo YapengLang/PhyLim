@@ -148,7 +148,7 @@ def check_proxs(p_dict):
             return False
     return True
 
-
+#TODO: decompose this function into display BV and drop model_result
 @define_app
 def mles_within_bounds(memb: DataMember) -> Union[model_result, SerialisableType]:
     """validate fitted model, return NotCompleted(if any abs(params-bound) <= 10^{-10}) or model_result"""

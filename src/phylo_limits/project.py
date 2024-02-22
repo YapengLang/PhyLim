@@ -1,17 +1,22 @@
 #TODO: this file will be filled with functions for projecting the fit: for given likelihood function, report the ens where DLC is broken.
 #       (it should project only matrix who is DLC)
-import click
 import numpy
 import scipy
 
-from cogent3 import get_app, maths
-from cogent3.parse.table import load_delimited
-from cogent3.app.result import model_result
-from tqdm import tqdm
- 
+from cogent3 import maths
+from cogent3.app.typing import SerialisableType
+from cogent3.util.dict_array import DictArray
 
-from phylo_limits.delta_col import get_stat_pi_via_eigen, get_sub_num
+from phylo_limits.delta_col import (
+    EstimateMinColDelta,
+    get_stat_pi_via_eigen,
+    invalid_dlc,
+)
 from phylo_limits.p_classifier import check_chainsaw
+
+
+expm = scipy.linalg.expm
+
 
 
 def num_saw_srch(t, q, p0, tau, model_name):
@@ -52,69 +57,56 @@ def num_saw_srch(t, q, p0, tau, model_name):
     return intervals
 
 
-def find_saw(infile: click.Path, dict_of_members):
-    loader = get_app("load_db")
-    header, rows, title, legend = load_delimited(
-        infile, header=False, sep="\t"
-    )  # a tsv of transit
 
-    tbl_rows = []
 
-    for row in tqdm(rows[1:]):  # todo:modify
-        memb = dict_of_members[row[0]]
-        model = loader(memb)
-
-        t = model.lf.get_param_value(par_name="length", edge=row[1])
-        q = model.lf.get_rate_matrix_for_edge(name=row[1], calibrated=True)
-        p0 = model.lf.get_motif_probs()
-        tau = row[3]
-        model_name = model.name
-        if intervals := num_saw_srch(t, q, p0, tau, model_name):
-            row_of_chainsaw = row + [intervals]
-            tbl_rows.append(row_of_chainsaw)
-    return tbl_rows
+def get_node_parent(tree: ..., node: str) -> str:
+    """given a node, seek its parent in tree"""
+    return tree.get_node_matching_name(node).parent.name
 
 
 
-# input model_result, validate matrix, and output list for only non-dlc. #TODO: is it necessary? 
-# @define_app
-# def get_dlc_viol(result: model_result) -> list:
-    # unique_id = result.source
-    edges = [k[0] for k in result.lf.get_all_psubs().keys()]
-    rows = []
-    for name in edges:
-        P = result.lf.get_psub_for_edge(name=name)
-        Q = result.lf.get_rate_matrix_for_edge(name=name)  # here the q is calibrated.
-        t = result.lf.get_param_value(par_name="length", edge=name)
-        p0 = result.lf.get_motif_probs_by_node()[
-            get_node_parent(result=result, node=name)
-        ]
-        pi = (
-            get_stat_pi_via_eigen(P) if result.name in ["ssGN", "GN"] else p0
-        )  # get limit distribution
-        ens = maths.matrix_exponential_integration.expected_number_subs(p0=p0, Q=Q, t=t)
 
-        metric = CalcMinColDeltaFit(
-            Q
-        )  # get diag, off-diag indices. this line can be replaced.
-        delta_col = min_col_diff(
-            P.to_array(), metric.diag_indices, metric.offdiag_indices
-        )
-        if check_dlc(p_matrix=P, p_limit=numpy.array([pi, pi, pi, pi])):
-            row = [name] + [t] + [ens] + [delta_col] + [0] + [0]
-        elif check_chainsaw(p_matrix=P, p_limit=numpy.array([pi, pi, pi, pi])):
-            row = [name] + [t] + [ens] + [delta_col] + [0] + [1]
-        else:
-            row = [name] + [t] + [ens] + [delta_col] + [1] + [0]
-        rows.append(row)
-    return rows
+def get_sub_num(q:DictArray, p0, model_name, edge_name, qc, lengths) -> SerialisableType:
+    """predict the dlc violating point before the limit for a rate matrix run on the edge"""
+    # load each Q, no calibration
+    estimate = EstimateMinColDelta(q)
+    estimate.optimise()
+
+    tau = estimate.stat[0]
+    delta_col = estimate.fit
+
+    sub_num = maths.matrix_exponential_integration.expected_number_subs(
+        p0=p0, Q=q, t=tau
+    )  # trans tau to sub_num
+
+    p = expm(estimate.calc.Q * tau)
+
+    if model_name in ["ssGN", "GN"]:
+        pi = get_stat_pi_via_eigen(p)
+    else:
+        pi=p0
+
+    if invalid_dlc(
+        delta_col,
+        limit=numpy.array([pi, pi, pi, pi]),
+        to_check=p,
+    ):# check if the tau_ estimated render the p into a sympathetic matrix not in limit
+        chainsaw_intervals = num_saw_srch(t=lengths(par_name="length", edge=edge_name), q=qc, p0=p0, tau=tau, model_name=model_name)
+        return {"edge_name":edge_name, "tau_":tau, "ENS":sub_num, "delta_col":delta_col, "chainsaws":chainsaw_intervals}
 
 
 
-def project(model_res:model_result) -> ...:
-    """assumption: the lf is identifiable.
-        description: it will calc every Q in a lf, and return a table consist of the tau_ point
+
+def project(qsub_dict:dict, motif_probs:DictArray, tree, model_name, qcsub_dict, lengths) -> ...:
     """
-    project_app = get_sub_num()
-    tbl = project_app(model_res)
-    return tbl
+    assumption: the model is identifiable.
+    des: it will calc every Q in a lf, and return a table consist of the tau_ point plus the chainsaws
+    """
+    valid_transits=[]
+    for k, v in qsub_dict.items():
+        edge_name = k[0]
+        p0 = motif_probs[get_node_parent(tree=tree, node=edge_name)]
+        if transit:= get_sub_num(q=v,p0=p0,model_name=model_name, edge_name=edge_name, qc=qcsub_dict[k], lengths=lengths):
+            valid_transits.append(transit)
+    return valid_transits
+

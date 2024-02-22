@@ -1,12 +1,14 @@
-import numpy
-from cogent3.util.dict_array import DictArray
-from cogent3.app.result import model_result
-from phylo_limits import delta_col
-
 import warnings
 
 from collections import Counter
-from numpy import allclose, partition, eye
+
+import numpy
+
+from cogent3.app.result import model_result
+from cogent3.util.dict_array import DictArray
+from numpy import allclose, eye, partition
+
+from phylo_limits import delta_col
 
 
 def check_I(p_matrix) -> bool:
@@ -109,3 +111,10 @@ def check_all_psubs(
             else:
                 new_dict[key] = {"value": value, "class": "Sympathetic"}
     return new_dict
+
+
+
+#TODO: there would be a class for matrix 
+class PMatrix():
+    def __init__(self) -> None:
+        pass                
