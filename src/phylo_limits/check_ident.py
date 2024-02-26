@@ -1,15 +1,18 @@
 # algorithm to distinguishing identifiable model
-from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
-from cogent3.util.dict_array import DictArray
-from cogent3.core.tree import PhyloNode
-from cogent3 import make_tree
-from phylo_limits import delta_col, p_classifier
-import numpy
 import copy
+import warnings
+
+from io import StringIO
+
+import numpy
 
 from Bio import Phylo
-from io import StringIO
-import warnings
+from cogent3 import make_tree
+from cogent3.core.tree import PhyloNode
+from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
+from cogent3.util.dict_array import DictArray
+
+from phylo_limits.p_classifier import check_all_psubs
 
 
 def rename_inter_nodes(tree: PhyloNode, psubs_dict: dict) -> str | dict:
@@ -77,74 +80,19 @@ def reroot(newick_tree: str, root: str) -> PhyloNode:
 
     return make_tree(tree_str)
 
-#TODO: should be del 
-def check_all_psubs(
-    psubs_dict: dict,
-    model_name: str,
-    motif_probs: DictArray,
-    strictly=True,
-    label_L=False,
-) -> dict:
-    """get a dict for all psubs in a fitted likelihood function. add class of each matrix to the dict. always warning users if Limit occurs
-    Parameter: `strictly` controls whether take I as DLC, if False, make it as DLC and warn it
-               `label_L` if True, label a limit matrix as Limit instead of Sympathetic"""
-    # motif_probs=lf.get_motif_probs_by_node()
-
-    new_dict = {}
-    for key, value in psubs_dict.items():
-        pi = (
-            delta_col.get_stat_pi_via_eigen(value)
-            if model_name in {"ssGN", "GN"}
-            else motif_probs[key[0]]
-        )
-
-        if p_classifier.check_I(value):
-            if strictly == True:
-                new_dict[key] = {"value": value, "class": "Identity"}
-            else:
-                warnings.warn(
-                    "Fit contains Identity matrix, which makes topology un-identifiable!"
-                )
-                new_dict[key] = {"value": value, "class": "DLC"}
-            continue
-
-        elif p_classifier.check_dlc(p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])):
-            new_dict[key] = {"value": value, "class": "DLC"}
-            continue
-
-        elif p_classifier.check_chainsaw(
-            p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])
-        ):
-
-            new_dict[key] = {"value": value, "class": "Chainsaw"}
-            continue
-
-        else:
-            if p_classifier.check_limit(
-                p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])
-            ):
-                warnings.warn("Fit contains Limit matrix!")
-                if label_L == True:
-                    new_dict[key] = {"value": value, "class": "Limit"}
-                else:
-                    new_dict[key] = {"value": value, "class": "Sympathetic"}
-            else:
-                new_dict[key] = {"value": value, "class": "Sympathetic"}
-    return new_dict
-
 
 # dict for all psubs with their class ie. an renamed output from check_all_psubs
-DICT_PSUBS = {}
+# DICT_PSUBS = {}
 # a dict stores all child-node pair, indicated all children below a node
 LINKED_NODES = []
 
 # note: cherry_picker has an alternative, which would track all DLC path from a root lead to tips. benchmark needed to make choice
-def cherry_picker(tree: PhyloNode) -> bool:
+def cherry_picker(tree: PhyloNode, DICT_PSUBS: dict) -> bool:
     for child in tree.children:
         if DICT_PSUBS[tuple(sorted((child.name, child.parent.name)))]["class"] == "DLC":
             result = True  # default before any recursion
             if child.children:  # check if the next subtree has internal
-                result = cherry_picker(child)  # store the result after each recursion
+                result = cherry_picker(child,DICT_PSUBS)  # store the result after each recursion
             if result:
                 LINKED_NODES.append(tree.name)
                 return True  # this break is necessary, it will stop other branch checking after we find a single way to a tip
@@ -162,7 +110,7 @@ def check_bad_psubs(psubs_dict: dict) -> set:
     return set(bad_nodes)
 
 
-def check_ident_rerooting(n, tree_str, which=True) -> bool or set:
+def check_ident_rerooting(n, tree_str, DICT_PSUBS, which=True) -> bool or set: # type: ignore
     """`which` if True, return every nodes broken or empty a set, otherwise, return False when a broken node occurs"""
     global LINKED_NODES
     fine_nodes = []
@@ -173,7 +121,7 @@ def check_ident_rerooting(n, tree_str, which=True) -> bool or set:
                 continue
             LINKED_NODES = []
             tree = reroot(newick_tree=tree_str, root=node)
-            cherry_picker(tree)
+            cherry_picker(tree, DICT_PSUBS)
             if not LINKED_NODES:
                 bad_nodes += [node]
             else:
@@ -187,7 +135,7 @@ def check_ident_rerooting(n, tree_str, which=True) -> bool or set:
                 continue
             LINKED_NODES = []
             tree = reroot(newick_tree=tree_str, root=node)
-            cherry_picker(tree)
+            cherry_picker(tree, DICT_PSUBS)
             if not LINKED_NODES:
                 return False
             else:
@@ -196,9 +144,9 @@ def check_ident_rerooting(n, tree_str, which=True) -> bool or set:
 
 # TODO:remove the global variable, change it into a class 7/12/2023, the class should be able to change into
 # json. 
-def check_ident(
-    lf: AlignmentLikelihoodFunction, strictly=True, which=False
-) -> bool or set:
+def validate_nodes(
+    lf: AlignmentLikelihoodFunction, strictly=True, which=True
+) -> bool or set: # type: ignore
     """for a given tree, whether rooted or not (not rooted at tips), find if: for every internal nodes denotes N,
     there is a path from that node to a tip meets all dlc Matrix on that path. otherwise unidentifiable.
     assumption: if any matrices are identity (if strictly) or chainsaw, unidentifiable. the tree labels are fixed. branches are labeled
@@ -209,13 +157,10 @@ def check_ident(
 
                `which` argu if True, func will report set. set{...} indicates which nodes are breaked as per original tree; if
     chainsaws and/or identities occur, return them discard any sympathetic issues. An empty set means ident."""
-    global DICT_PSUBS
 
     # first, check if there are any I or Chainsaw
     psubs_dict = check_all_psubs(
-        lf.get_all_psubs(),
-        lf.name,
-        lf.get_motif_probs_by_node(),
+        lf,
         strictly=strictly,
         label_L=False,
     )
@@ -236,7 +181,7 @@ def check_ident(
     n = set(tree.get_node_names()) - set(
         tree.get_tip_names()
     )  # all internal nodes N, a set
-    bad_nodes = check_ident_rerooting(n, tree_str, which=which)
+    bad_nodes = check_ident_rerooting(n, tree_str,DICT_PSUBS, which=which)
     if which == False or len(bad_nodes) < 1:  # if dont want nodes or get an empty set
         return bad_nodes
     renaming_projection = {v: k for k, v in renaming_projection.items()}

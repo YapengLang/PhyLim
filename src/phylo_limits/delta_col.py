@@ -1,4 +1,3 @@
-#TODO: this module should be separated by two parts: 1) for matrix manuplition 2) for projetcting future
 from typing import Any
 
 import numpy

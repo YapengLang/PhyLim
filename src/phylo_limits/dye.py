@@ -26,9 +26,9 @@ def colour_edges(model_res:model_result) -> Dendrogram:
             edge_L.append(i[0])
     
     fig = tree.get_figure()  
-    fig.style_edges(edges = edge_Sympathetic, line=dict(color="blue", width=1), legendgroup="Sym")
+    fig.style_edges(edges = edge_Sympathetic, line=dict(color="blue", width=1), legendgroup="Sympathetic")
     fig.style_edges(edges = edge_C, line=dict(color="red", width=1), legendgroup="Chainsaw")
-    fig.style_edges(edges = edge_D, line=dict(color="grey", width=1), legendgroup="DLC")
+    fig.style_edges(edges = edge_D, line=dict(color="black", width=1), legendgroup="DLC")
     fig.style_edges(edges = edge_L, line=dict(color="blue", width=1), legendgroup="Limit")
     fig.style_edges(edges = edge_I, line=dict(color="grey", width=1), legendgroup="Identity")
     return fig

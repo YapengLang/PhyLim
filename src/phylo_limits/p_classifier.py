@@ -5,6 +5,7 @@ from collections import Counter
 import numpy
 
 from cogent3.app.result import model_result
+from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.dict_array import DictArray
 from numpy import allclose, eye, partition
 
@@ -58,18 +59,23 @@ def check_chainsaw(p_matrix, p_limit=None) -> bool:
 
 
 def check_all_psubs(
-    model_res:model_result,
+    lf:AlignmentLikelihoodFunction,
     strictly=True,
-    label_L=False,
+    label_L=True,
 ) -> dict:
-    """get a dict for all psubs in a fitted likelihood function. add class of each matrix to the dict. always warning users if Limit occurs
-    Parameter: `strictly` controls whether take I as DLC, if False, make it as DLC and warn it
-               `label_L` if True, label a limit matrix as Limit instead of Sympathetic"""
-    # motif_probs=lf.get_motif_probs_by_node()
-    psubs_dict = model_res.lf.get_all_psubs()
-    model_name = model_res.name
-    motif_probs = model_res.lf.get_motif_probs_by_node()
+    """get a dict for all psubs in a fitted likelihood function. add class of each matrix to the dict. 
+    always warning users if Limit occurs.                                                                                           
+    
+    Args: `strictly` controls whether take I as DLC, if False, make it as DLC and warn it
+               `label_L` if True, label a limit matrix as Limit instead of Sympathetic
 
+    Returns:
+        dict: with class of matrices
+    """
+    motif_probs=lf.get_motif_probs_by_node()
+    psubs_dict = lf.get_all_psubs()
+    model_name = lf.name
+    
     new_dict = {}
     for key, value in psubs_dict.items():
         pi = (
@@ -112,9 +118,3 @@ def check_all_psubs(
                 new_dict[key] = {"value": value, "class": "Sympathetic"}
     return new_dict
 
-
-
-#TODO: there would be a class for matrix 
-class PMatrix():
-    def __init__(self) -> None:
-        pass                

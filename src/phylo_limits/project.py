@@ -1,10 +1,9 @@
-#TODO: this file will be filled with functions for projecting the fit: for given likelihood function, report the ens where DLC is broken.
-#       (it should project only matrix who is DLC)
 import numpy
 import scipy
 
 from cogent3 import maths
 from cogent3.app.typing import SerialisableType
+from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.dict_array import DictArray
 
 from phylo_limits.delta_col import (
@@ -66,7 +65,7 @@ def get_node_parent(tree: ..., node: str) -> str:
 
 
 
-def get_sub_num(q:DictArray, p0, model_name, edge_name, qc, lengths) -> SerialisableType:
+def get_sub_num(q:DictArray, p0, model_name, edge_name) -> SerialisableType:
     """predict the dlc violating point before the limit for a rate matrix run on the edge"""
     # load each Q, no calibration
     estimate = EstimateMinColDelta(q)
@@ -91,22 +90,36 @@ def get_sub_num(q:DictArray, p0, model_name, edge_name, qc, lengths) -> Serialis
         limit=numpy.array([pi, pi, pi, pi]),
         to_check=p,
     ):# check if the tau_ estimated render the p into a sympathetic matrix not in limit
-        chainsaw_intervals = num_saw_srch(t=lengths(par_name="length", edge=edge_name), q=qc, p0=p0, tau=tau, model_name=model_name)
-        return {"edge_name":edge_name, "tau_":tau, "ENS":sub_num, "delta_col":delta_col, "chainsaws":chainsaw_intervals}
+        return {"edge_name":edge_name, "tau_":tau, "ENS":sub_num, "delta_col":delta_col}
 
 
 
-
-def project(qsub_dict:dict, motif_probs:DictArray, tree, model_name, qcsub_dict, lengths) -> ...:
+def project(lf:AlignmentLikelihoodFunction) -> dict:
     """
     assumption: the model is identifiable.
     des: it will calc every Q in a lf, and return a table consist of the tau_ point plus the chainsaws
     """
-    valid_transits=[]
+    qcsub_dict, qsub_dict = lf.get_all_rate_matrices(calibrated=True), lf.get_all_rate_matrices(calibrated=False)
+    motif_probs = lf.get_motif_probs_by_node()
+    model_name = lf.name 
+    
+    
+    if len(qcsub_dict) == 1: 
+        if transit:= get_sub_num(q=qsub_dict[("edge.0",)], p0=motif_probs["root"], model_name=model_name, edge_name="edge.0"):
+            chainsaw_intervals = num_saw_srch(t=lf.get_param_value(par_name="length", edge_name="edge.0"), 
+                                              q=qcsub_dict[()], p0=motif_probs["root"], tau=transit["tau_"], model_name=model_name)
+            transit["chainsaw_intervals"] = chainsaw_intervals
+            return [transit] 
+    
+    valid_transits=[]    
     for k, v in qsub_dict.items():
         edge_name = k[0]
-        p0 = motif_probs[get_node_parent(tree=tree, node=edge_name)]
-        if transit:= get_sub_num(q=v,p0=p0,model_name=model_name, edge_name=edge_name, qc=qcsub_dict[k], lengths=lengths):
+        p0 = motif_probs[get_node_parent(tree=lf.tree, node=edge_name)]
+        if transit:= get_sub_num(q=v,p0=p0,model_name=model_name, edge_name=edge_name):
+            chainsaw_intervals = num_saw_srch(t=lf.get_param_value(par_name="length", edge_name=edge_name), 
+                                              q=qcsub_dict[(edge_name,)], p0=p0, tau=transit["tau_"], model_name=model_name)
+            transit["chainsaw_intervals"] = chainsaw_intervals 
             valid_transits.append(transit)
+
     return valid_transits
 
