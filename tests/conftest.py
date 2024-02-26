@@ -1,6 +1,16 @@
-import pytest
 import numpy
+import pytest
 
+
+@pytest.fixture
+def repeat(request):
+    # Get the repeat count from the test marker or default to 1
+    repeat_count = request.node.get_closest_marker('repeat')
+    if repeat_count is None:
+        repeat_count = 1
+    else:
+        repeat_count = repeat_count.args[0]
+    return repeat_count
 
 @pytest.fixture()
 def make_p():

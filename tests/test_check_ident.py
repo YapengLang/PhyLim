@@ -1,12 +1,11 @@
-from ylib import check_ident
-from cogent3 import make_tree, load_tree
-from cogent3.util.deserialise import deserialise_object
-import pytest
 import pickle
-from numpy import eye, array
 
-from contextlib import redirect_stderr
-import io
+from cogent3 import load_tree, make_tree
+from cogent3.util.deserialise import deserialise_object
+from numpy import array, eye
+
+from phylo_limits import check_ident
+
 
 a_identity = eye(4, dtype=float)
 a_chainsaw = array(
@@ -91,89 +90,6 @@ a_limit2 = array(
 )  # chainsaw-like
 
 
-@pytest.mark.parametrize(
-    "psubs_dict, model_name, motif_probs, expected",
-    [
-        ({"a": a_identity}, "", {"a": [0.25, 0.25, 0.25, 0.25]}, "Identity"),
-        ({"a": a_chainsaw}, "", {"a": [0.25, 0.25, 0.25, 0.25]}, "Chainsaw"),
-        ({"a": a_sympathetic}, "", {"a": [0.25, 0.25, 0.25, 0.25]}, "Sympathetic"),
-        ({"a": a_sympathetic2}, "", {"a": [0.25, 0.25, 0.25, 0.25]}, "Sympathetic"),
-        ({"a": a_limit}, "ssGN", {"a": [0.25, 0.25, 0.25, 0.25]}, "Sympathetic"),
-        ({"a": a_limit2}, "ssGN", {"a": [0.25, 0.25, 0.25, 0.25]}, "Sympathetic"),
-    ],
-)
-def test_check_all_psubs(psubs_dict, model_name, motif_probs, expected):
-    result = list(
-        check_ident.check_all_psubs(
-            psubs_dict=psubs_dict, model_name=model_name, motif_probs=motif_probs
-        ).values()
-    )[0]["class"]
-
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    "psubs_dict, model_name, motif_probs,expected",
-    [
-        ({"a": a_identity}, "", {"a": [0.25, 0.25, 0.25, 0.25]}, "Identity"),
-    ],
-)
-def test_check_all_psubs_strictly(psubs_dict, model_name, motif_probs, expected):
-    result = list(
-        check_ident.check_all_psubs(
-            psubs_dict=psubs_dict,
-            model_name=model_name,
-            motif_probs=motif_probs,
-            strictly=True,
-        ).values()
-    )[0]["class"]
-
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    "psubs_dict,model_name, motif_probs, expected",
-    [
-        ({"a": a_identity}, "", {"a": [0.25, 0.25, 0.25, 0.25]}, "DLC"),
-    ],
-)
-def test_check_all_psubs_general(psubs_dict, model_name, motif_probs, expected):
-    f = io.StringIO()
-    with redirect_stderr(f):
-        result = list(
-            check_ident.check_all_psubs(
-                psubs_dict=psubs_dict,
-                model_name=model_name,
-                motif_probs=motif_probs,
-                strictly=False,
-            ).values()
-        )[0]["class"]
-    if f.getvalue():
-        assert "Identity" in f.getvalue()
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    "psubs_dict,model_name, motif_probs, expected",
-    [
-        ({"a": a_limit}, "ssGN", {"a": [0.25, 0.25, 0.25, 0.25]}, "Limit"),
-    ],
-)
-def test_check_all_psubs_label_L(psubs_dict, model_name, motif_probs, expected):
-    f = io.StringIO()
-    with redirect_stderr(f):
-        result = list(
-            check_ident.check_all_psubs(
-                psubs_dict=psubs_dict,
-                model_name=model_name,
-                motif_probs=motif_probs,
-                label_L=True,
-            ).values()
-        )[0]["class"]
-    if f.getvalue():
-        assert "Limit" in f.getvalue()
-    assert result == expected
-
 
 def test_cherry_picker_1():
     tree = load_tree("data/ident_check/test_tree.newick")
@@ -189,10 +105,9 @@ def test_cherry_picker_1():
         tuple(sorted(("inter.3", "inter.2"))): {"class": "Sympathetic"},
     }
 
-    check_ident.DICT_PSUBS = psubs_dict
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree, psubs_dict)
 
     assert check_ident.LINKED_NODES == ["inter.2", "inter.1"]
 
@@ -210,10 +125,10 @@ def test_cherry_picker_2():
         tuple(sorted(("inter.2", "inter.1"))): {"class": "DLC"},
         tuple(sorted(("inter.3", "inter.2"))): {"class": "DLC"},
     }
-    check_ident.DICT_PSUBS = psubs_dict
+    
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree,psubs_dict)
 
     assert check_ident.LINKED_NODES == ["inter.3", "inter.2", "inter.1"]
 
@@ -231,10 +146,10 @@ def test_cherry_picker_3():
         tuple(sorted(("inter.2", "inter.1"))): {"class": "Sympathetic"},
         tuple(sorted(("inter.3", "inter.2"))): {"class": "DLC"},
     }
-    check_ident.DICT_PSUBS = psubs_dict
+    
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree,psubs_dict)
 
     assert not check_ident.LINKED_NODES
 
@@ -269,10 +184,10 @@ def test_cherry_picker_4():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "DLC"},
     }
-    check_ident.DICT_PSUBS = psubs_dict
+    
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree,psubs_dict)
 
     assert check_ident.LINKED_NODES == ["inter.6", "inter.2", "inter.1"]
 
@@ -307,10 +222,10 @@ def test_cherry_picker_5():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "DLC"},
     }
-    check_ident.DICT_PSUBS = psubs_dict
+    
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree,psubs_dict)
 
     assert check_ident.LINKED_NODES == ["inter.7", "inter.4", "inter.1"]
 
@@ -345,10 +260,10 @@ def test_cherry_picker_6():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "Sympathetic"},
     }
-    check_ident.DICT_PSUBS = psubs_dict
+    
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree,psubs_dict)
 
     assert check_ident.LINKED_NODES == ["inter.3", "inter.1"]
 
@@ -383,10 +298,10 @@ def test_cherry_picker_7():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "Sympathetic"},
     }
-    check_ident.DICT_PSUBS = psubs_dict
+    
     check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree)
+    check_ident.cherry_picker(tree,psubs_dict)
 
     assert not check_ident.LINKED_NODES
 
@@ -407,7 +322,7 @@ def test_check_ident_core():
     with open("data/ident_check/unid_psubs.pkl", "rb") as f:
         psubs_dict = pickle.load(f)
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    tree_str, check_ident.DICT_PSUBS, renaming_projection = check_ident.rename(
+    tree_str, DICT_PSUBS, renaming_projection = check_ident.rename(
         tree=lf.tree, psubs_dict=psubs_dict
     )
     tree = make_tree(tree_str)
@@ -415,11 +330,11 @@ def test_check_ident_core():
         tree.get_tip_names()
     )  # all internal nodes N, a set
     # loop for re-rooting
-    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, which=True)
+    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, DICT_PSUBS,which=True)
     print(bad_nodes)
     print(tree_str)
     print(
-        check_ident.DICT_PSUBS[
+        DICT_PSUBS[
             tuple(sorted((list(bad_nodes)[0], "ESAG_RS01755-gc0.47%")))
         ]["class"]
     )
@@ -428,7 +343,7 @@ def test_check_ident_core():
 def test_check_ident_core2():
     with open("data/ident_check/unid_psubs2.pkl", "rb") as f:
         psubs_dict = pickle.load(f)
-    tree_str, check_ident.DICT_PSUBS, renaming_projection = check_ident.rename(
+    tree_str, DICT_PSUBS, renaming_projection = check_ident.rename(
         tree=make_tree("((A,B)edge.0,(C,D)edge.1);"), psubs_dict=psubs_dict
     )
     tree = make_tree(tree_str)
@@ -436,10 +351,10 @@ def test_check_ident_core2():
         tree.get_tip_names()
     )  # all internal nodes N, a set
     # loop for re-rooting
-    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, which=True)
+    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, DICT_PSUBS,which=True)
     print(bad_nodes)
     print(tree_str)
-    print(check_ident.DICT_PSUBS)
+    print(DICT_PSUBS)
 
 
 def test_check_ident_core3():
@@ -447,7 +362,7 @@ def test_check_ident_core3():
     with open("data/ident_check/unid_psubs.pkl", "rb") as f:
         psubs_dict = pickle.load(f)
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    tree_str, check_ident.DICT_PSUBS, renaming_projection = check_ident.rename(
+    tree_str, DICT_PSUBS, renaming_projection = check_ident.rename(
         tree=lf.tree, psubs_dict=psubs_dict
     )
     renaming_projection = {v: k for k, v in renaming_projection.items()}
@@ -456,40 +371,40 @@ def test_check_ident_core3():
         tree.get_tip_names()
     )  # all internal nodes N, a set
     # loop for re-rooting
-    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, which=True)
+    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, DICT_PSUBS,which=True)
     for i in bad_nodes:
         print(renaming_projection[i])
 
 
 def test_check_ident():
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    assert not check_ident.check_ident(lf)
+    assert not check_ident.validate_nodes(lf, which=False)
 
 
 def test_check_ident2():
     lf = deserialise_object("data/ident_check/id_lf_case2.json")
-    assert check_ident.check_ident(lf)
+    assert check_ident.validate_nodes(lf, which=False)
 
 
 def test_check_ident3():
     # two I
     model = deserialise_object("data/ident_check/unid_model_case2.json")
-    result = check_ident.check_ident(model.lf, which=True)
+    result = check_ident.validate_nodes(model.lf, which=True)
     assert result == {"A", "D"}
 
 
 def test_check_ident4():
     lf = deserialise_object("data/ident_check/id_lf_case2.json")
-    assert check_ident.check_ident(lf, which=True) == set()
+    assert check_ident.validate_nodes(lf, which=True) == set()
 
 
 def test_check_ident5():
     # all DLC
     lf = deserialise_object("data/ident_check/id_all_dlc_case.json")
-    assert check_ident.check_ident(lf, which=True) == set()
+    assert check_ident.validate_nodes(lf, which=True) == set()
 
 
 def test_check_ident6():
     # all DLC
     lf = deserialise_object("data/ident_check/id_all_dlc_case.json")
-    assert check_ident.check_ident(lf, which=False) == True
+    assert check_ident.validate_nodes(lf, which=False) == True
