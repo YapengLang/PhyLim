@@ -6,6 +6,7 @@ from cogent3 import get_app, open_data_store
 from scitrack import CachingLogger
 
 from phylo_limits.fit import fit
+from phylo_limits.record import generate_record
 
 
 __author__ = "Yapeng Lang"
@@ -54,10 +55,17 @@ _outpath = click.option(
     "-a",
     "--name",
     type=str,
-    required=False,
+    required=True,
     help="the model family you want to fit",
 )
-def ident(inpath, outpath, name):
+@click.option(
+    "-h",
+    "--het",
+    type=str,
+    required=True,
+    help="time-homo or heter",
+)
+def ident_check(inpath, outpath, name, het):
     # open an input directory
     dstore = open_data_store(
             inpath,
@@ -73,10 +81,15 @@ def ident(inpath, outpath, name):
 
     # construct the process
     loader = get_app("load_aligned", format="nexus", moltype="dna") 
-    model = fit(model=name)
-    process = loader + model
-    #TODO: all the apps will communicate with json string 
+    model = fit(model=name, het=het)
+    recorder = generate_record()
+    writer = get_app("write_db", data_store=out_dstore)
 
+    process = loader + model + recorder + writer
+    process.apply_to(
+            dstore[:5], show_progress=True, parallel=False
+        ) 
+    print(out_dstore.describe)
 
 
 

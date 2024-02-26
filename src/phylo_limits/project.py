@@ -105,18 +105,20 @@ def project(lf:AlignmentLikelihoodFunction) -> dict:
     
     
     if len(qcsub_dict) == 1: 
-        if transit:= get_sub_num(q=qsub_dict[("edge.0",)], p0=motif_probs["root"], model_name=model_name, edge_name="edge.0"):
-            chainsaw_intervals = num_saw_srch(t=lf.get_param_value(par_name="length", edge_name="edge.0"), 
+        edge_name = lf.tree.get_tip_names()[0] if len(lf.tree.get_tip_names()) < 4 else "edge.0"
+        if transit:= get_sub_num(q=qsub_dict[(edge_name,)], p0=motif_probs["root"], model_name=model_name, edge_name=edge_name):
+            chainsaw_intervals = num_saw_srch(t=lf.get_param_value(par_name="length", edge=edge_name), 
                                               q=qcsub_dict[()], p0=motif_probs["root"], tau=transit["tau_"], model_name=model_name)
             transit["chainsaw_intervals"] = chainsaw_intervals
             return [transit] 
+        return []
     
     valid_transits=[]    
     for k, v in qsub_dict.items():
         edge_name = k[0]
         p0 = motif_probs[get_node_parent(tree=lf.tree, node=edge_name)]
         if transit:= get_sub_num(q=v,p0=p0,model_name=model_name, edge_name=edge_name):
-            chainsaw_intervals = num_saw_srch(t=lf.get_param_value(par_name="length", edge_name=edge_name), 
+            chainsaw_intervals = num_saw_srch(t=lf.get_param_value(par_name="length", edge=edge_name), 
                                               q=qcsub_dict[(edge_name,)], p0=p0, tau=transit["tau_"], model_name=model_name)
             transit["chainsaw_intervals"] = chainsaw_intervals 
             valid_transits.append(transit)
