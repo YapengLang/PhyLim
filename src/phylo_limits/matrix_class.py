@@ -12,18 +12,19 @@ from numpy import allclose, eye, partition
 from phylo_limits import delta_col
 
 
-def check_I(p_matrix) -> bool:
+#TODO: rename as is_..
+def is_identity(p_matrix) -> bool:
     return allclose(p_matrix, eye(p_matrix.shape[0]))
 
 
-def check_limit(p_matrix, p_limit) -> bool:
+def is_limit(p_matrix, p_limit) -> bool:
     """check if a given matrix is a limit matrix by definition"""
-    return bool(allclose(p_matrix, p_limit))
+    return allclose(p_matrix, p_limit)
 
 
 # modified, 1) if limit_m provided, the dlc should NOT equal to it, 2)the diag NOT allclose() to the largest offdiag #todo: add test
-def check_dlc(p_matrix, p_limit=None) -> bool:
-    if p_limit is not None and check_limit(p_matrix, p_limit):
+def is_dlc(p_matrix, p_limit=None) -> bool:
+    if p_limit is not None and is_limit(p_matrix, p_limit):
         return False
     for i in range(len(p_matrix)):  # get column
         column = [p_matrix[j][i] for j in range(len(p_matrix))]
@@ -37,11 +38,11 @@ def check_dlc(p_matrix, p_limit=None) -> bool:
 
 
 # modified, 1) if limit_m provided, the chainsaw should NOT equal to it, 2) the diag NOT allclose() to the largest offdiag.
-def check_chainsaw(p_matrix, p_limit=None) -> bool:
+def is_chainsaw(p_matrix, p_limit=None) -> bool:
     """given a p is non-DLC"""  # could simplify a little bit more
-    if check_dlc(p_matrix):
+    if is_dlc(p_matrix):
         return False
-    if p_limit is not None and check_limit(p_matrix, p_limit):
+    if p_limit is not None and is_limit(p_matrix, p_limit):
         return False
     largest_row_index = {}
     for i in range(len(p_matrix)):  # get column
@@ -58,7 +59,7 @@ def check_chainsaw(p_matrix, p_limit=None) -> bool:
 
 
 
-def check_all_psubs(
+def classify_psubs(
     lf:AlignmentLikelihoodFunction,
     strictly=True,
     label_L=True,
@@ -84,7 +85,7 @@ def check_all_psubs(
             else motif_probs[key[0]]
         )
 
-        if check_I(value):
+        if is_identity(value):
             if strictly == True:
                 new_dict[key] = {"value": value, "class": "Identity"}
             else:
@@ -94,11 +95,11 @@ def check_all_psubs(
                 new_dict[key] = {"value": value, "class": "DLC"}
             continue
 
-        elif check_dlc(p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])):
+        elif is_dlc(p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])):
             new_dict[key] = {"value": value, "class": "DLC"}
             continue
 
-        elif check_chainsaw(
+        elif is_chainsaw(
             p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])
         ):
 
@@ -106,7 +107,7 @@ def check_all_psubs(
             continue
 
         else:
-            if check_limit(
+            if is_limit(
                 p_matrix=value, p_limit=numpy.array([pi, pi, pi, pi])
             ):
                 warnings.warn("Fit contains Limit matrix!")

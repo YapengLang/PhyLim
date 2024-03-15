@@ -7,19 +7,19 @@ from cogent3.app.typing import SerialisableType
 from cogent3.core.tree import PhyloNode
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 
-from phylo_limits.check_ident import validate_nodes
-from phylo_limits.diagnose import diagonse
-from phylo_limits.p_classifier import check_all_psubs
-from phylo_limits.project import project
+from phylo_limits.check_boundary import diagonse
+from phylo_limits.check_ident import has_valid_path
+from phylo_limits.evolved import project
+from phylo_limits.matrix_class import classify_psubs
 
 
 @dataclasses.dataclass(slots=True)
 class PhyloLimitRec:
     """the record of phylogenetic limits"""
-    unique_id: str 
+    source: str 
     model_name: str
     tree: PhyloNode
-    lf: AlignmentLikelihoodFunction
+    lf: AlignmentLikelihoodFunction 
     psubs_class: dict 
     boundary_values: dict 
     bad_nodes: set
@@ -27,7 +27,7 @@ class PhyloLimitRec:
     projection: list
         
     def to_rich_dict(self) -> dict:
-        return {"id":self.unique_id, 
+        return {"id":self.source, 
                 "model":self.model_name, 
                 "tree":self.tree.get_newick(), 
                 "psubs_class": {str(k):v["class"] for k,v in self.psubs_class.items()},
@@ -47,15 +47,15 @@ def generate_record(model_res:model_result, strictly=False) -> SerialisableType:
         string in json format 
     """  
     lf = model_res.lf
-    bad_nodes = validate_nodes(lf=lf, strictly=strictly)
-    identifiable= not bool(bad_nodes) # if there are any bad nodes show up, unidentifiable
+    bad_nodes = has_valid_path(lf=lf, strictly=strictly)
+    identifiable= not bad_nodes # if there are any bad nodes show up, unidentifiable
     projection = project(lf) if identifiable else [] # only project rate matrix when the model is identifiable
 
-    rec = PhyloLimitRec(unique_id=model_res.source, 
+    rec = PhyloLimitRec(source=model_res.source, 
                         model_name=model_res.name,
                         tree=model_res.tree,
                         lf=lf,
-                        psubs_class=check_all_psubs(lf=lf, strictly=strictly),
+                        psubs_class=classify_psubs(lf=lf, strictly=strictly),
                         boundary_values=diagonse(lf=lf),
                         bad_nodes=bad_nodes,
                         identifiable= identifiable,

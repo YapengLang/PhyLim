@@ -1,7 +1,7 @@
 import numpy
 import pytest
 
-from phylo_limits.diagnose import mles_within_bounds
+from phylo_limits.check_boundary import mles_within_bounds
 
 
 _eps = numpy.finfo(float).eps

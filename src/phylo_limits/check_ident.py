@@ -12,7 +12,7 @@ from cogent3.core.tree import PhyloNode
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.dict_array import DictArray
 
-from phylo_limits.p_classifier import check_all_psubs
+from phylo_limits.matrix_class import classify_psubs
 
 
 def rename_inter_nodes(tree: PhyloNode, psubs_dict: dict) -> str | dict:
@@ -144,7 +144,7 @@ def check_ident_rerooting(n, tree_str, DICT_PSUBS, which=True) -> bool or set: #
 
 # TODO:remove the global variable, change it into a class 7/12/2023, the class should be able to change into
 # json. 
-def validate_nodes(
+def has_valid_path(
     lf: AlignmentLikelihoodFunction, strictly=True, which=True
 ) -> bool or set: # type: ignore
     """for a given tree, whether rooted or not (not rooted at tips), find if: for every internal nodes denotes N,
@@ -159,7 +159,7 @@ def validate_nodes(
     chainsaws and/or identities occur, return them discard any sympathetic issues. An empty set means ident."""
 
     # first, check if there are any I or Chainsaw
-    psubs_dict = check_all_psubs(
+    psubs_dict = classify_psubs(
         lf,
         strictly=strictly,
         label_L=False,

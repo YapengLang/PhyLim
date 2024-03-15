@@ -1,12 +1,12 @@
 import numpy
 import pytest
 
-from phylo_limits.p_classifier import (
-    check_all_psubs,
-    check_chainsaw,
-    check_dlc,
-    check_I,
-    check_limit,
+from phylo_limits.matrix_class import (
+    classify_psubs,
+    is_chainsaw,
+    is_dlc,
+    is_I,
+    is_limit,
 )
 
 
@@ -14,7 +14,7 @@ def test_check_dlc(make_p, repeat):
     for i in range(repeat):
         dlc = numpy.random.rand() > 0.5
         p = make_p(dlc)
-        assert check_dlc(p) == dlc
+        assert is_dlc(p) == dlc
 
 
 def test_check_chainsaw(make_p,repeat):
@@ -24,7 +24,7 @@ def test_check_chainsaw(make_p,repeat):
         numpy.random.shuffle(row_indices)
         dlc = not (row_indices == numpy.arange(4)).all()
         p = m[row_indices, :]
-        assert check_chainsaw(p) == dlc
+        assert is_chainsaw(p) == dlc
 
 
 def test_check_chainsaw_limit(repeat):
@@ -32,7 +32,7 @@ def test_check_chainsaw_limit(repeat):
         a = numpy.random.random(4)
         a /= a.sum()
         m = numpy.array([a - 1e-8] * 4)
-        assert check_chainsaw(p_matrix=m, p_limit=numpy.array([a] * 4)) == False
+        assert is_chainsaw(p_matrix=m, p_limit=numpy.array([a] * 4)) == False
 
 
 def test_check_chainsaw_close():
@@ -64,7 +64,7 @@ def test_check_chainsaw_close():
             ],
         ]
     )
-    assert check_chainsaw(m) == False
+    assert is_chainsaw(m) == False
 
 @pytest.mark.parametrize(
     "matrix, expected",
@@ -74,12 +74,12 @@ def test_check_chainsaw_close():
     ],
 )
 def test_check_I(matrix, expected):
-    assert check_I(matrix) == expected
+    assert is_I(matrix) == expected
 
 
 def test_check_limit():    
     a = numpy.random.random(4)
     a /= a.sum()
     m = numpy.array([a - 1e-8] * 4)
-    assert check_limit(p_matrix=m, p_limit=numpy.array([a] * 4)) == True
+    assert is_limit(p_matrix=m, p_limit=numpy.array([a] * 4)) == True
 

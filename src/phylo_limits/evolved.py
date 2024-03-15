@@ -11,7 +11,7 @@ from phylo_limits.delta_col import (
     get_stat_pi_via_eigen,
     invalid_dlc,
 )
-from phylo_limits.p_classifier import check_chainsaw
+from phylo_limits.matrix_class import is_chainsaw
 
 
 expm = scipy.linalg.expm
@@ -28,7 +28,7 @@ def num_saw_srch(t, q, p0, tau, model_name):
     for i in numpy.arange(start, end, step):
         p = scipy.linalg.expm(q.to_array() * i)
         pi = get_stat_pi_via_eigen(p) if model_name in ["ssGN", "GN"] else p0
-        if check_chainsaw(p_matrix=p, p_limit=numpy.array([pi, pi, pi, pi])):
+        if is_chainsaw(p_matrix=p, p_limit=numpy.array([pi, pi, pi, pi])):
             if interval_l == 0.0:
                 interval_l = i
             if i + step >= end:

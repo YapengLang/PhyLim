@@ -378,33 +378,33 @@ def test_check_ident_core3():
 
 def test_check_ident():
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    assert not check_ident.validate_nodes(lf, which=False)
+    assert not check_ident.has_valid_path(lf, which=False)
 
 
 def test_check_ident2():
     lf = deserialise_object("data/ident_check/id_lf_case2.json")
-    assert check_ident.validate_nodes(lf, which=False)
+    assert check_ident.has_valid_path(lf, which=False)
 
 
 def test_check_ident3():
     # two I
     model = deserialise_object("data/ident_check/unid_model_case2.json")
-    result = check_ident.validate_nodes(model.lf, which=True)
+    result = check_ident.has_valid_path(model.lf, which=True)
     assert result == {"A", "D"}
 
 
 def test_check_ident4():
     lf = deserialise_object("data/ident_check/id_lf_case2.json")
-    assert check_ident.validate_nodes(lf, which=True) == set()
+    assert check_ident.has_valid_path(lf, which=True) == set()
 
 
 def test_check_ident5():
     # all DLC
     lf = deserialise_object("data/ident_check/id_all_dlc_case.json")
-    assert check_ident.validate_nodes(lf, which=True) == set()
+    assert check_ident.has_valid_path(lf, which=True) == set()
 
 
 def test_check_ident6():
     # all DLC
     lf = deserialise_object("data/ident_check/id_all_dlc_case.json")
-    assert check_ident.validate_nodes(lf, which=False) == True
+    assert check_ident.has_valid_path(lf, which=False) == True
