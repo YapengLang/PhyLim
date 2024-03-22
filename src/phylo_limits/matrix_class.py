@@ -4,13 +4,31 @@ from collections import Counter
 
 import numpy
 
+from cogent3 import maths
 from cogent3.app.result import model_result
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.dict_array import DictArray
 from numpy import allclose, eye, partition
+from numpy.linalg import eig, inv  # , sum
+from numpy.ma import dot as ma_dot
+from numpy.ma.core import array, diag
 
-from phylo_limits import delta_col
 
+def get_stat_pi_via_eigen(P, check_precision=True):
+    """This code was provided by Gavin Huttley Obtain stationary distribution
+    via EigenValue decomposition."""
+    P = array(P).T
+    eva, eve = eig(P)
+
+    if check_precision:
+        i = inv(eve)
+        r = ma_dot(ma_dot(eve, diag(eva)), i).real
+        if not numpy.allclose(P, r):
+            raise ArithmeticError
+
+    evect = eve[:, eva.round(10) == 1]
+    stat_pi = evect / sum(evect.real)
+    return stat_pi.flatten().real
 
 #TODO: rename as is_..
 def is_identity(p_matrix) -> bool:
@@ -80,7 +98,7 @@ def classify_psubs(
     new_dict = {}
     for key, value in psubs_dict.items():
         pi = (
-            delta_col.get_stat_pi_via_eigen(value)
+            get_stat_pi_via_eigen(value)
             if model_name in {"ssGN", "GN"}
             else motif_probs[key[0]]
         )

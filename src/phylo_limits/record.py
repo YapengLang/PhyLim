@@ -9,7 +9,6 @@ from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 
 from phylo_limits.check_boundary import diagonse
 from phylo_limits.check_ident import has_valid_path
-from phylo_limits.evolved import project
 from phylo_limits.matrix_class import classify_psubs
 
 
@@ -40,7 +39,6 @@ class PhyloLimitRec:
 @define_app
 def generate_record(model_res:model_result, strictly=False) -> SerialisableType:
     """record psubs classes, identifiability, boundary values and non-DLC projection 
-
     Args:
         "strictly" controls the sensitivity for Identity matrix (I); if false, treat I as DLC
     Return:
@@ -49,7 +47,6 @@ def generate_record(model_res:model_result, strictly=False) -> SerialisableType:
     lf = model_res.lf
     bad_nodes = has_valid_path(lf=lf, strictly=strictly)
     identifiable= not bad_nodes # if there are any bad nodes show up, unidentifiable
-    projection = project(lf) if identifiable else [] # only project rate matrix when the model is identifiable
 
     rec = PhyloLimitRec(source=model_res.source, 
                         model_name=model_res.name,
@@ -58,7 +55,6 @@ def generate_record(model_res:model_result, strictly=False) -> SerialisableType:
                         psubs_class=classify_psubs(lf=lf, strictly=strictly),
                         boundary_values=diagonse(lf=lf),
                         bad_nodes=bad_nodes,
-                        identifiable= identifiable,
-                        projection=projection)
+                        identifiable= identifiable)
     
     return json.dumps(rec.to_rich_dict())

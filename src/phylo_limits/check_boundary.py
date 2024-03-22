@@ -2,8 +2,8 @@ import numpy
 
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 
-from phylo_limits.fit import LOWER, RATE_UPPER
 
+# TODO: read from lf function
 
 def mles_within_bounds(params) -> dict:
     """check if there are any rate params proximity to the bounds as 1e-10"""
