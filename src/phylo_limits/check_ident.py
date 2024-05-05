@@ -1,4 +1,3 @@
-# algorithm to distinguishing identifiable model
 import copy
 import warnings
 
@@ -8,6 +7,7 @@ import numpy
 
 from Bio import Phylo
 from cogent3 import make_tree
+from cogent3.app.composable import define_app
 from cogent3.core.tree import PhyloNode
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.dict_array import DictArray
@@ -86,13 +86,16 @@ def reroot(newick_tree: str, root: str) -> PhyloNode:
 # a dict stores all child-node pair, indicated all children below a node
 LINKED_NODES = []
 
+
 # note: cherry_picker has an alternative, which would track all DLC path from a root lead to tips. benchmark needed to make choice
 def cherry_picker(tree: PhyloNode, DICT_PSUBS: dict) -> bool:
     for child in tree.children:
         if DICT_PSUBS[tuple(sorted((child.name, child.parent.name)))]["class"] == "DLC":
             result = True  # default before any recursion
             if child.children:  # check if the next subtree has internal
-                result = cherry_picker(child,DICT_PSUBS)  # store the result after each recursion
+                result = cherry_picker(
+                    child, DICT_PSUBS
+                )  # store the result after each recursion
             if result:
                 LINKED_NODES.append(tree.name)
                 return True  # this break is necessary, it will stop other branch checking after we find a single way to a tip
@@ -110,7 +113,7 @@ def check_bad_psubs(psubs_dict: dict) -> set:
     return set(bad_nodes)
 
 
-def check_ident_rerooting(n, tree_str, DICT_PSUBS, which=True) -> bool or set: # type: ignore
+def check_ident_rerooting(n, tree_str, DICT_PSUBS, which=True) -> bool or set:  # type: ignore
     """`which` if True, return every nodes broken or empty a set, otherwise, return False when a broken node occurs"""
     global LINKED_NODES
     fine_nodes = []
@@ -142,11 +145,10 @@ def check_ident_rerooting(n, tree_str, DICT_PSUBS, which=True) -> bool or set: #
                 fine_nodes += LINKED_NODES
         return True
 
-# TODO:remove the global variable, change it into a class 7/12/2023, the class should be able to change into
-# json. 
+
 def has_valid_path(
     lf: AlignmentLikelihoodFunction, strictly=True, which=True
-) -> bool or set: # type: ignore
+) -> bool or set:  # type: ignore
     """for a given tree, whether rooted or not (not rooted at tips), find if: for every internal nodes denotes N,
     there is a path from that node to a tip meets all dlc Matrix on that path. otherwise unidentifiable.
     assumption: if any matrices are identity (if strictly) or chainsaw, unidentifiable. the tree labels are fixed. branches are labeled
@@ -155,8 +157,9 @@ def has_valid_path(
     Parameters: `strictly` controls the sensitivity for Identity matrix; if True, func will return False (or set{..}) whenever I occurs, otherwise, func
     will take I as DLC, and report it as warning
 
-               `which` argu if True, func will report set. set{...} indicates which nodes are breaked as per original tree; if
-    chainsaws and/or identities occur, return them discard any sympathetic issues. An empty set means ident."""
+            `which` argu if True, func will report set. set{...} indicates which nodes are breaked as per original tree; if
+    chainsaws and/or identities occur, return them discard any sympathetic issues. An empty set means ident.
+    """
 
     # first, check if there are any I or Chainsaw
     psubs_dict = classify_psubs(
@@ -181,8 +184,19 @@ def has_valid_path(
     n = set(tree.get_node_names()) - set(
         tree.get_tip_names()
     )  # all internal nodes N, a set
-    bad_nodes = check_ident_rerooting(n, tree_str,DICT_PSUBS, which=which)
+    bad_nodes = check_ident_rerooting(n, tree_str, DICT_PSUBS, which=which)
     if which == False or len(bad_nodes) < 1:  # if dont want nodes or get an empty set
         return bad_nodes
     renaming_projection = {v: k for k, v in renaming_projection.items()}
     return {renaming_projection[node] for node in bad_nodes}
+
+
+@define_app
+class IdentifiabilityCheck:
+    """check the identifiability of a model.
+    We make use of the feature of c3 that every tree is root-oriented,
+    the question is: can every tip lead to the root with all DLC?"""
+
+    def has_valid_path(self, psubs, tree):
+        tree = make_tree(tree)
+        tip_to_root_map = tree.child_parent_map()

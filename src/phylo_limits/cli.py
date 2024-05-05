@@ -27,6 +27,7 @@ def main():
     """cl app for model fitting and result filtering"""
     pass
 
+
 _verbose = click.option(
     "-v",
     "--verbose",
@@ -38,7 +39,6 @@ _verbose = click.option(
 _outpath = click.option(
     "-o", "--outpath", type=Path, help="the input string will be cast to Path instance"
 )
-
 
 
 @main.command(no_args_is_help=True)
@@ -67,29 +67,26 @@ _outpath = click.option(
 def ident_check(inpath, outpath, name, het):
     # open an input directory
     dstore = open_data_store(
-            inpath,
-            suffix="nexus",
-            mode="r",
-        )  
-    
-    # open an output directory   
-    out_dstore = open_data_store(
-        outpath, mode="w"
-    ) 
+        inpath,
+        suffix="nexus",
+        mode="r",
+    )
+
+    # open an output directory
+    out_dstore = open_data_store(outpath, mode="w")
     out_dstore.unlock(force=True)
 
     # construct the process
-    loader = get_app("load_aligned", format="nexus", moltype="dna") # TODO: load model_results
+    loader = get_app(
+        "load_aligned", format="nexus", moltype="dna"
+    )  # TODO: load model_results
     # model = fit(model=name, het=het)
     recorder = generate_record()
     writer = get_app("write_db", data_store=out_dstore)
 
-    process = loader  + recorder + writer
-    process.apply_to(
-            dstore[:5], show_progress=True, parallel=False
-        ) 
+    process = loader + recorder + writer
+    process.apply_to(dstore[:5], show_progress=True, parallel=False)
     print(out_dstore.describe)
-
 
 
 if __name__ == "__main__":
