@@ -4,7 +4,7 @@ from cogent3 import load_tree, make_tree
 from cogent3.util.deserialise import deserialise_object
 from numpy import array, eye
 
-from phylo_limits import check_ident
+from phylo_limits import has_valid_path
 
 
 a_identity = eye(4, dtype=float)
@@ -90,7 +90,6 @@ a_limit2 = array(
 )  # chainsaw-like
 
 
-
 def test_cherry_picker_1():
     tree = load_tree("data/ident_check/test_tree.newick")
     tree.reassign_names({"edge.1": "inter.2", "edge.0": "inter.3"})
@@ -105,11 +104,11 @@ def test_cherry_picker_1():
         tuple(sorted(("inter.3", "inter.2"))): {"class": "Sympathetic"},
     }
 
-    check_ident.LINKED_NODES = []
+    has_valid_path.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree, psubs_dict)
+    has_valid_path.cherry_picker(tree, psubs_dict)
 
-    assert check_ident.LINKED_NODES == ["inter.2", "inter.1"]
+    assert has_valid_path.LINKED_NODES == ["inter.2", "inter.1"]
 
 
 def test_cherry_picker_2():
@@ -125,12 +124,12 @@ def test_cherry_picker_2():
         tuple(sorted(("inter.2", "inter.1"))): {"class": "DLC"},
         tuple(sorted(("inter.3", "inter.2"))): {"class": "DLC"},
     }
-    
-    check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree,psubs_dict)
+    has_valid_path.LINKED_NODES = []
 
-    assert check_ident.LINKED_NODES == ["inter.3", "inter.2", "inter.1"]
+    has_valid_path.cherry_picker(tree, psubs_dict)
+
+    assert has_valid_path.LINKED_NODES == ["inter.3", "inter.2", "inter.1"]
 
 
 def test_cherry_picker_3():
@@ -146,12 +145,12 @@ def test_cherry_picker_3():
         tuple(sorted(("inter.2", "inter.1"))): {"class": "Sympathetic"},
         tuple(sorted(("inter.3", "inter.2"))): {"class": "DLC"},
     }
-    
-    check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree,psubs_dict)
+    has_valid_path.LINKED_NODES = []
 
-    assert not check_ident.LINKED_NODES
+    has_valid_path.cherry_picker(tree, psubs_dict)
+
+    assert not has_valid_path.LINKED_NODES
 
 
 def test_cherry_picker_4():
@@ -184,12 +183,12 @@ def test_cherry_picker_4():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "DLC"},
     }
-    
-    check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree,psubs_dict)
+    has_valid_path.LINKED_NODES = []
 
-    assert check_ident.LINKED_NODES == ["inter.6", "inter.2", "inter.1"]
+    has_valid_path.cherry_picker(tree, psubs_dict)
+
+    assert has_valid_path.LINKED_NODES == ["inter.6", "inter.2", "inter.1"]
 
 
 def test_cherry_picker_5():
@@ -222,12 +221,12 @@ def test_cherry_picker_5():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "DLC"},
     }
-    
-    check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree,psubs_dict)
+    has_valid_path.LINKED_NODES = []
 
-    assert check_ident.LINKED_NODES == ["inter.7", "inter.4", "inter.1"]
+    has_valid_path.cherry_picker(tree, psubs_dict)
+
+    assert has_valid_path.LINKED_NODES == ["inter.7", "inter.4", "inter.1"]
 
 
 def test_cherry_picker_6():
@@ -260,12 +259,12 @@ def test_cherry_picker_6():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "Sympathetic"},
     }
-    
-    check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree,psubs_dict)
+    has_valid_path.LINKED_NODES = []
 
-    assert check_ident.LINKED_NODES == ["inter.3", "inter.1"]
+    has_valid_path.cherry_picker(tree, psubs_dict)
+
+    assert has_valid_path.LINKED_NODES == ["inter.3", "inter.1"]
 
 
 def test_cherry_picker_7():
@@ -298,22 +297,22 @@ def test_cherry_picker_7():
         tuple(sorted(("inter.6", "inter.2"))): {"class": "DLC"},
         tuple(sorted(("inter.7", "inter.4"))): {"class": "Sympathetic"},
     }
-    
-    check_ident.LINKED_NODES = []
 
-    check_ident.cherry_picker(tree,psubs_dict)
+    has_valid_path.LINKED_NODES = []
 
-    assert not check_ident.LINKED_NODES
+    has_valid_path.cherry_picker(tree, psubs_dict)
+
+    assert not has_valid_path.LINKED_NODES
 
 
 # the below tests would check in case bifurc. nodes've been dropped
 def test_reroot1():
-    tree = check_ident.reroot("((A,(X,Y)edge2)edge0,(C,D)edge1)root;", "edge2")
+    tree = has_valid_path.reroot("((A,(X,Y)edge2)edge0,(C,D)edge1)root;", "edge2")
     assert len(tree.get_node_names()) - len(tree.get_tip_names()) == 4
 
 
 def test_reroot2():
-    tree = check_ident.reroot("((A,B)edge.0,(C,D)edge.1)root;", "edge.1")
+    tree = has_valid_path.reroot("((A,B)edge.0,(C,D)edge.1)root;", "edge.1")
     assert len(tree.get_node_names()) - len(tree.get_tip_names()) == 3
 
 
@@ -322,7 +321,7 @@ def test_check_ident_core():
     with open("data/ident_check/unid_psubs.pkl", "rb") as f:
         psubs_dict = pickle.load(f)
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    tree_str, DICT_PSUBS, renaming_projection = check_ident.rename(
+    tree_str, DICT_PSUBS, renaming_projection = has_valid_path.rename(
         tree=lf.tree, psubs_dict=psubs_dict
     )
     tree = make_tree(tree_str)
@@ -330,20 +329,20 @@ def test_check_ident_core():
         tree.get_tip_names()
     )  # all internal nodes N, a set
     # loop for re-rooting
-    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, DICT_PSUBS,which=True)
+    bad_nodes = has_valid_path.check_ident_rerooting(
+        n, tree_str, DICT_PSUBS, which=True
+    )
     print(bad_nodes)
     print(tree_str)
     print(
-        DICT_PSUBS[
-            tuple(sorted((list(bad_nodes)[0], "ESAG_RS01755-gc0.47%")))
-        ]["class"]
+        DICT_PSUBS[tuple(sorted((list(bad_nodes)[0], "ESAG_RS01755-gc0.47%")))]["class"]
     )
 
 
 def test_check_ident_core2():
     with open("data/ident_check/unid_psubs2.pkl", "rb") as f:
         psubs_dict = pickle.load(f)
-    tree_str, DICT_PSUBS, renaming_projection = check_ident.rename(
+    tree_str, DICT_PSUBS, renaming_projection = has_valid_path.rename(
         tree=make_tree("((A,B)edge.0,(C,D)edge.1);"), psubs_dict=psubs_dict
     )
     tree = make_tree(tree_str)
@@ -351,7 +350,9 @@ def test_check_ident_core2():
         tree.get_tip_names()
     )  # all internal nodes N, a set
     # loop for re-rooting
-    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, DICT_PSUBS,which=True)
+    bad_nodes = has_valid_path.check_ident_rerooting(
+        n, tree_str, DICT_PSUBS, which=True
+    )
     print(bad_nodes)
     print(tree_str)
     print(DICT_PSUBS)
@@ -362,7 +363,7 @@ def test_check_ident_core3():
     with open("data/ident_check/unid_psubs.pkl", "rb") as f:
         psubs_dict = pickle.load(f)
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    tree_str, DICT_PSUBS, renaming_projection = check_ident.rename(
+    tree_str, DICT_PSUBS, renaming_projection = has_valid_path.rename(
         tree=lf.tree, psubs_dict=psubs_dict
     )
     renaming_projection = {v: k for k, v in renaming_projection.items()}
@@ -371,40 +372,42 @@ def test_check_ident_core3():
         tree.get_tip_names()
     )  # all internal nodes N, a set
     # loop for re-rooting
-    bad_nodes = check_ident.check_ident_rerooting(n, tree_str, DICT_PSUBS,which=True)
+    bad_nodes = has_valid_path.check_ident_rerooting(
+        n, tree_str, DICT_PSUBS, which=True
+    )
     for i in bad_nodes:
         print(renaming_projection[i])
 
 
 def test_check_ident():
     lf = deserialise_object("data/ident_check/unid_lf_case1.json")
-    assert not check_ident.has_valid_path(lf, which=False)
+    assert not has_valid_path.has_valid_path(lf, which=False)
 
 
 def test_check_ident2():
     lf = deserialise_object("data/ident_check/id_lf_case2.json")
-    assert check_ident.has_valid_path(lf, which=False)
+    assert has_valid_path.has_valid_path(lf, which=False)
 
 
 def test_check_ident3():
     # two I
     model = deserialise_object("data/ident_check/unid_model_case2.json")
-    result = check_ident.has_valid_path(model.lf, which=True)
+    result = has_valid_path.has_valid_path(model.lf, which=True)
     assert result == {"A", "D"}
 
 
 def test_check_ident4():
     lf = deserialise_object("data/ident_check/id_lf_case2.json")
-    assert check_ident.has_valid_path(lf, which=True) == set()
+    assert has_valid_path.has_valid_path(lf, which=True) == set()
 
 
 def test_check_ident5():
     # all DLC
     lf = deserialise_object("data/ident_check/id_all_dlc_case.json")
-    assert check_ident.has_valid_path(lf, which=True) == set()
+    assert has_valid_path.has_valid_path(lf, which=True) == set()
 
 
 def test_check_ident6():
     # all DLC
     lf = deserialise_object("data/ident_check/id_all_dlc_case.json")
-    assert check_ident.has_valid_path(lf, which=False) == True
+    assert has_valid_path.has_valid_path(lf, which=False) == True

@@ -9,7 +9,7 @@ from cogent3.core.tree import PhyloNode
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 
 from phylo_limits.check_boundary import diagonse
-from phylo_limits.check_ident import has_valid_path
+from phylo_limits.has_valid_path import has_valid_path
 from phylo_limits.loader import load_bounds
 from phylo_limits.matrix_class import classify_psubs
 from phylo_limits.record import PhyloLimitRec
