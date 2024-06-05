@@ -14,12 +14,19 @@ class BoundsViolation:
     source: str
     vio: dict[str, float]
 
+    def items(self):
+        return self.vio.items()
+
 
 @define_app
 class get_bounds_violation:
-    """check if there are any rate params proximity to the bounds as 1e-10"""
+    """check if there are any rate params proximity to the bounds as 1e-10.
+    This value is important as two clusters of fits splitted by the value."""
 
-    exclude_params = ["length", "mprobs"]
+    exclude_params = "length", "mprobs"
+
+    def __init__(self) -> None:
+        pass
 
     def main(self, params: ParamRules) -> BoundsViolation:
         vio = dict()

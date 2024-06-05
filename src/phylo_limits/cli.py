@@ -5,7 +5,7 @@ import click
 from cogent3 import get_app, open_data_store
 from scitrack import CachingLogger
 
-from phylo_limits.record import generate_record
+from phylo_limits.record_results import generate_record
 
 
 __author__ = "Yapeng Lang"
@@ -64,29 +64,7 @@ _outpath = click.option(
     required=True,
     help="time-homo or heter",
 )
-def ident_check(inpath, outpath, name, het):
-    # open an input directory
-    dstore = open_data_store(
-        inpath,
-        suffix="nexus",
-        mode="r",
-    )
-
-    # open an output directory
-    out_dstore = open_data_store(outpath, mode="w")
-    out_dstore.unlock(force=True)
-
-    # construct the process
-    loader = get_app(
-        "load_aligned", format="nexus", moltype="dna"
-    )  # TODO: load model_results
-    # model = fit(model=name, het=het)
-    recorder = generate_record()
-    writer = get_app("write_db", data_store=out_dstore)
-
-    process = loader + recorder + writer
-    process.apply_to(dstore[:5], show_progress=True, parallel=False)
-    print(out_dstore.describe)
+def ident_check(inpath, outpath, name, het): ...
 
 
 if __name__ == "__main__":
