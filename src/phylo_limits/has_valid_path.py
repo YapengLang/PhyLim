@@ -1,11 +1,7 @@
 from itertools import chain
 
-import numpy
-
 from cogent3.app.composable import define_app
 from cogent3.core.tree import PhyloNode
-from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
-from cogent3.util.dict_array import DictArray
 
 from phylo_limits.classify_matrix import SYMPATHETIC, ModelMatrixCategories
 
@@ -67,7 +63,7 @@ class IdentifiabilityCheck:
     We make use of the feature of c3 that every tree is root-oriented,
     the question is: can every tip lead to the root with all DLC?"""
 
-    def main(self, psubs: ModelMatrixCategories, tree: PhyloNode) -> ...:
+    def main(self, psubs: ModelMatrixCategories, tree: PhyloNode) -> set:
         mcats = psubs.mcats
         msyms = {k for k, v in mcats.items() if v is SYMPATHETIC}
         tips = set(tree.get_tip_names())
