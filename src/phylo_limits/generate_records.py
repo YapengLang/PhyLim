@@ -1,18 +1,22 @@
 import dataclasses
 import json
 
+from typing import Union
+
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
 
 from phylo_limits import parser
 from phylo_limits.check_boundary import get_bounds_violation
-from phylo_limits.classify_matrix import classify_psubs
-from phylo_limits.has_valid_path import IdentifiabilityCheck
+from phylo_limits.classify_matrix import MatrixCategory, classify_psubs
+from phylo_limits.eval_identifiability import (
+    IdentifiabilityCheck,
+    IdentMsgTypes,
+)
 
 
 clspsub_app = classify_psubs()
 bound_app = get_bounds_violation()
-Ident_app = IdentifiabilityCheck()
 
 
 @dataclasses.dataclass(slots=True)
@@ -21,22 +25,28 @@ class PhyloLimitRec:
 
     source: str
     model_name: str
-    boundary_values: dict
-    identifiable: bool
-    bad_nodes: set
+    boundary_values: dict[str, float]
+    mcats: dict[tuple[str], MatrixCategory]
+    identifiability: bool
+    strict: bool
+    message: Union[set, None]
+    message_type: Union[IdentMsgTypes, None]
 
     def to_rich_dict(self) -> dict:
         return {
             "source": self.source,
             "model_name": self.model_name,
             "boundary_values": self.boundary_values,
-            "identifiable": self.identifiable,
-            "bad_nodes": self.bad_nodes,
+            "mcats": {k: v.value for k, v in self.mcats.items()},
+            "identifiability": self.identifiability,
+            "strict": self.strict,
+            "message": self.message,
+            "message_type": self.message_type,  # TODO
         }
 
 
 @define_app
-def generate_record(model_res: model_result, strictly=False) -> str:
+def generate_record(model_res: model_result, strict=False) -> str:
     """record psubs classes, identifiability, boundary values and non-DLC projection.
     Args:
         "strictly" controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
@@ -47,14 +57,19 @@ def generate_record(model_res: model_result, strictly=False) -> str:
     psubs = parser.load_psubs(model_res)
     params = parser.load_param_values(model_res)
 
-    res = Ident_app(psubs=clspsub_app(psubs), tree=tree)
+    Ident_app = IdentifiabilityCheck(strict=strict)
+    psubs_labelled = clspsub_app(psubs)
+    res = Ident_app(psubs=psubs_labelled, tree=tree)
 
     rec = PhyloLimitRec(
         source=model_res.source,
         model_name=str(model_res.name),  # TODO
         boundary_values=bound_app(params).vio,
-        identifiable=not bool(res),
-        bad_nodes=res,
+        mcats=psubs_labelled.mcats,
+        identifiability=res.identifiability,
+        strict=res.strict,
+        message=res.message,
+        message_type=res.message_type,
     )
 
     return json.dumps(rec.to_rich_dict())

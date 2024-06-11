@@ -2,7 +2,7 @@ import pytest
 
 from cogent3 import load_tree, make_tree
 
-from phylo_limits.has_valid_path import (
+from phylo_limits.eval_identifiability import (
     break_path,
     find_intersection,
     trav_tip_to_root,
