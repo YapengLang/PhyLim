@@ -43,7 +43,7 @@ def generate_record(model_res: model_result, strictly=False) -> str:
     Return:
         string in json format
     """
-    tree = parser.load_topo(model_res)
+    tree = parser.load_tree(model_res)
     psubs = parser.load_psubs(model_res)
     params = parser.load_param_values(model_res)
 
@@ -53,8 +53,8 @@ def generate_record(model_res: model_result, strictly=False) -> str:
         source=model_res.source,
         model_name=str(model_res.name),  # TODO
         boundary_values=bound_app(params).vio,
-        bad_nodes=res,
         identifiable=not bool(res),
+        bad_nodes=res,
     )
 
     return json.dumps(rec.to_rich_dict())
