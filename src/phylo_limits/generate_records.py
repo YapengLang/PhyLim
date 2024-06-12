@@ -24,8 +24,8 @@ class PhyloLimitRec:
     """the record of phylogenetic limits"""
 
     source: str
-    model_name: str
-    boundary_values: dict[str, float]
+    model_name: Union[str, None]
+    boundary_values: Union[dict[str, float], None]
     mcats: dict[tuple[str], MatrixCategory]
     identifiability: bool
     strict: bool
@@ -33,21 +33,27 @@ class PhyloLimitRec:
     message_type: Union[IdentMsgTypes, None]
 
     def to_rich_dict(self) -> dict:
-        return {
+        result = {
             "source": self.source,
-            "model_name": self.model_name,
-            "boundary_values": self.boundary_values,
+            "model_name": "" if self.model_name is None else self.model_name,
+            "boundary_values": (
+                dict() if self.boundary_values is None else self.boundary_values
+            ),
             "mcats": {k: v.value for k, v in self.mcats.items()},
             "identifiability": self.identifiability,
             "strict": self.strict,
-            "message": self.message,
-            "message_type": self.message_type,  # TODO
+            "message": {} if self.message is None else self.message,
+            "message_type": self.message_type,
         }
+
+        if info := result["message_type"]:
+            result["message_type"] = info.value
+        return result
 
 
 @define_app
 def generate_record(model_res: model_result, strict=False) -> str:
-    """record psubs classes, identifiability, boundary values and non-DLC projection.
+    """record psubs classes, identifiability, boundary values etc.
     Args:
         "strictly" controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
     Return:
@@ -59,17 +65,17 @@ def generate_record(model_res: model_result, strict=False) -> str:
 
     Ident_app = IdentifiabilityCheck(strict=strict)
     psubs_labelled = clspsub_app(psubs)
-    res = Ident_app(psubs=psubs_labelled, tree=tree)
+    result = Ident_app(psubs=psubs_labelled, tree=tree)
 
     rec = PhyloLimitRec(
         source=model_res.source,
-        model_name=str(model_res.name),  # TODO
+        model_name=model_res.name,
         boundary_values=bound_app(params).vio,
         mcats=psubs_labelled.mcats,
-        identifiability=res.identifiability,
-        strict=res.strict,
-        message=res.message,
-        message_type=res.message_type,
+        identifiability=result.identifiability,
+        strict=result.strict,
+        message=result.message,
+        message_type=result.message_type,
     )
 
     return json.dumps(rec.to_rich_dict())

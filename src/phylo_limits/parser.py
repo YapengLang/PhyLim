@@ -1,9 +1,11 @@
+from cogent3.app.result import model_result
 from cogent3.core.tree import PhyloNode
 
 from phylo_limits.check_boundary import ParamRules
 from phylo_limits.classify_matrix import ModelPsubs
 
 
+# TODO: add typings
 def load_tree(model_result) -> PhyloNode:
     """get c3 tree"""
     return model_result.lf.tree

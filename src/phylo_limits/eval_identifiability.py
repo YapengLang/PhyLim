@@ -71,13 +71,13 @@ def find_bad_nodes(reachable: list[set], tips: set, nodes: set) -> set:
 def eval_mcats(mcats: dict[tuple[str], MatrixCategory], strict: bool) -> set:
     """return any chainsaws or identity matrices (depend on `strict`)"""
     bad_categories = {IDENTITY, CHAINSAW} if strict else {CHAINSAW}
-    return {k for k, v in mcats.items() if v in bad_categories}
+    return {k[0] for k, v in mcats.items() if v in bad_categories}
 
 
 def eval_paths(mcats: dict[tuple[str], MatrixCategory], tree: PhyloNode) -> set:
-    """if num of S = 1, return an empty set; if num of S >= 2, run the path validation algm,
+    """if num of S = 1 or 0, return an empty set; if num of S >= 2, run the path validation algm,
     then return a set for bad nodes."""
-    msyms = {k for k, v in mcats.items() if v in {SYMPATHETIC, LIMIT}}
+    msyms = {k[0] for k, v in mcats.items() if v in {SYMPATHETIC, LIMIT}}
     if len(msyms) < 2:
         return set()
     tips = set(tree.get_tip_names())
