@@ -52,7 +52,8 @@ def break_path(path: list[str], msyms: set) -> list[set]:
 
 
 def find_intersection(list_split_paths: list[set]) -> list[set]:
-    """this function's from: https://stackoverflow.com/a/6800499"""
+    """Take union of sets based on shared element(s).
+    this function's referred to: https://stackoverflow.com/a/6800499."""
     reachable = list(map(set, list_split_paths))
     for i, v in enumerate(reachable):
         for j, k in enumerate(reachable[i + 1 :], i + 1):
@@ -63,6 +64,7 @@ def find_intersection(list_split_paths: list[set]) -> list[set]:
 
 
 def find_bad_nodes(reachable: list[set], tips: set, nodes: set) -> set:
+    """retain nodes in each `reachable` set if there is a node in `tips`"""
     reachable = [x for x in reachable if x & tips]
     good_nodes = set(chain.from_iterable(reachable))
     return nodes - good_nodes
