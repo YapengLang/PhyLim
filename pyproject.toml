@@ -49,6 +49,9 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
+markers = [
+    "repeat: repeat mutiple times of tests"
+]
 addopts = ["--strict-config", "-ra"]
 testpaths = "tests"
 

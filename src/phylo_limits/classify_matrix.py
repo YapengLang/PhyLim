@@ -30,7 +30,7 @@ def is_identity(p_matrix: ndarray) -> bool:
 
 def is_limit(p_matrix: ndarray) -> bool:
     """check if a given matrix is a Limit matrix, which all rows are same"""
-    p_limit = tile(p_matrix[0], (4, 1))  # TODO; shape!
+    p_limit = tile(p_matrix[0], (p_matrix.shape[0], 1))
     return allclose(p_matrix, p_limit)
 
 
@@ -40,8 +40,8 @@ def is_dlc(p_matrix: ndarray) -> bool:
     but the equality between the diagnoal and off-diag elements matters.
     """
     diags = numpy.diag(p_matrix)
-    off_diags = p_matrix.T[~eye(4, dtype=bool)].reshape(  # TODO; shape!
-        4, 3
+    off_diags = p_matrix.T[~eye(p_matrix.shape[0], dtype=bool)].reshape(
+        p_matrix.shape[0], p_matrix.shape[0] - 1
     )  # take all off-diags as each column in p_matrix a vector
     for i in range(len(diags)):
         off_max = off_diags[i].max()

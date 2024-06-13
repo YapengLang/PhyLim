@@ -13,7 +13,7 @@ from phylo_limits.delta_col import (
 _eps = numpy.finfo(float).eps
 
 
-def test_min_col_diff(make_p,repeat):
+def test_min_col_diff(make_dlc, repeat):
     for i in range(repeat):
         mask = numpy.ones((4, 4), bool)
         mask[numpy.diag_indices(4)] = False
@@ -22,12 +22,12 @@ def test_min_col_diff(make_p,repeat):
 
         # randomly generate p matrix which has 50% probability to be dlc
         dlc = numpy.random.rand() > 0.5
-        p = make_p(dlc)
+        p = make_dlc(dlc)
         expected = p[0, 0] - p[0, 1]
         assert numpy.allclose(min_col_diff(p, diag_indices, offdiag_indices), expected)
 
 
-def test_min_diff_from_diag(make_p,repeat):
+def test_min_diff_from_diag(make_dlc, repeat):
     for i in range(repeat):
         mask = numpy.ones((4, 4), bool)
         mask[numpy.diag_indices(4)] = False
@@ -35,7 +35,7 @@ def test_min_diff_from_diag(make_p,repeat):
         offdiag_indices = mask
 
         dlc = numpy.random.rand() > 0.5
-        p = make_p(dlc)
+        p = make_dlc(dlc)
         expected = p[0, 0] - p[0, 1]
         assert numpy.allclose(
             min_diff_from_diag(p, diag_indices, offdiag_indices), [expected] * 4
