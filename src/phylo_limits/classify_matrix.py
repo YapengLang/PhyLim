@@ -84,7 +84,7 @@ def classify_psub(p_matrix: ndarray) -> MatrixCategory:
 @dataclasses.dataclass(slots=True)
 class ModelPsubs:
     source: str
-    psubs: dict[tuple[str], DictArray]
+    psubs: dict[tuple[str, ...], DictArray]
 
     def items(self):
         return self.psubs.items()
@@ -93,7 +93,7 @@ class ModelPsubs:
 @dataclasses.dataclass(slots=True)
 class ModelMatrixCategories:
     source: str
-    mcats: dict[tuple[str], MatrixCategory]
+    mcats: dict[tuple[str, ...], MatrixCategory]
 
 
 @define_app

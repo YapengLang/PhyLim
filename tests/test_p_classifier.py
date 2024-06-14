@@ -2,6 +2,13 @@ import numpy
 import pytest
 
 from phylo_limits.classify_matrix import (
+    CHAINSAW,
+    DLC,
+    IDENTITY,
+    LIMIT,
+    SYMPATHETIC,
+    ModelMatrixCategories,
+    ModelPsubs,
     classify_psub,
     classify_psubs,
     is_chainsaw,
@@ -11,8 +18,15 @@ from phylo_limits.classify_matrix import (
 )
 
 
-def test_is_identity():
-    assert is_identity(numpy.eye(4)) == True
+@pytest.mark.parametrize(
+    "matrix_input, expected",
+    [
+        (numpy.eye(4), True),
+        (numpy.ones((4, 4)), False),
+    ],
+)
+def test_is_identity(matrix_input, expected):
+    assert is_identity(matrix_input) == expected
 
 
 @pytest.mark.repeat(10)
@@ -59,59 +73,46 @@ def test_is_chainsaw_by_dlc(make_dlc):
     assert is_chainsaw(make_dlc()) == False
 
 
-# def test_check_chainsaw_limit(repeat):
-#     for i in range(repeat):
-#         a = numpy.random.random(4)
-#         a /= a.sum()
-#         m = numpy.array([a - 1e-8] * 4)
-#         assert is_chainsaw(p_matrix=m, p_limit=numpy.array([a] * 4)) == False
-
-
-def test_check_chainsaw_close():  # TODO: store extreme cases into data folder.
-    m = numpy.array(
-        [
-            [
-                0.096737740606487349,
-                0.412019393154277491,
-                0.087722662266498261,
-                0.403520203972736691,
-            ],
-            [
-                0.084159672770039218,
-                0.414528031407991659,
-                0.086784264411416831,
-                0.414528031410552167,
-            ],
-            [
-                0.087722662266498261,
-                0.403520203972736913,
-                0.096737740606487418,
-                0.412019393154277491,
-            ],
-            [
-                0.086784264411416789,
-                0.414528031410552333,
-                0.084159672770039246,
-                0.414528031407991437,
-            ],
-        ]
-    )
+def test_is_chainsaw_by_sym_empir():
+    with open("data/matrices/sympathetic1.npy", "rb") as f:
+        m = numpy.load(f)
     assert is_chainsaw(m) == False
 
 
-# @pytest.mark.parametrize(
-#     "matrix, expected",
-#     [
-#         (numpy.eye(4, dtype=float), True),
-#         (numpy.ones((4, 4)), False),
-#     ],
-# )
-# def test_check_I(matrix, expected):
-#     assert is_I(matrix) == expected
+def test_is_limit(make_limit):
+    assert is_limit(make_limit()) == True
 
 
-# def test_check_limit():
-#     a = numpy.random.random(4)
-#     a /= a.sum()
-#     m = numpy.array([a - 1e-8] * 4)
-#     assert is_limit(p_matrix=m, p_limit=numpy.array([a] * 4)) == True
+def test_is_limit_by_sym_empir():
+    with open("data/matrices/sympathetic1.npy", "rb") as f:
+        m = numpy.load(f)
+    assert is_limit(m) == False
+
+
+@pytest.mark.parametrize(
+    "mtx_input, expected",
+    [("make_limit", LIMIT), ("make_dlc", DLC), ("make_chainsaw", CHAINSAW)],
+)
+def test_classify_psub_by_fixtures(mtx_input, expected, request):
+    mtx_fx = request.getfixturevalue(mtx_input)
+    result = classify_psub(mtx_fx())
+    assert result == expected
+
+
+def test_classify_psub_by_sym_empir():
+    with open("data/matrices/sympathetic1.npy", "rb") as f:
+        m = numpy.load(f)
+    assert classify_psub(m) == SYMPATHETIC
+
+
+def test_classify_psub_by_I():
+    assert classify_psub(numpy.eye(4)) == IDENTITY
+
+
+def test_classify_psubs(make_dlc):
+    from cogent3.util import dict_array
+
+    psub = {(str("bar"),): dict_array.DictArray(make_dlc())}
+    mpsubs = ModelPsubs(source="foo", psubs=psub)
+    cls_app = classify_psubs()
+    assert isinstance(cls_app(mpsubs), ModelMatrixCategories)
