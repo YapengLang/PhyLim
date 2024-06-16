@@ -1,4 +1,3 @@
-import numpy
 import pytest
 
 from phylo_limits.check_boundary import (

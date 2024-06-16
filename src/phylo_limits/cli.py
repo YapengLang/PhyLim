@@ -5,7 +5,7 @@ import click
 from cogent3 import get_app, open_data_store
 from scitrack import CachingLogger
 
-from phylo_limits.generate_records import generate_record
+from phylo_limits.generate_record import generate_record
 
 
 __author__ = "Yapeng Lang"
