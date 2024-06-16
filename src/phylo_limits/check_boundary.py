@@ -12,10 +12,7 @@ class ParamRules:
 @dataclasses.dataclass(slots=True)
 class BoundsViolation:
     source: str
-    vio: dict[str, float]
-
-    def items(self):
-        return self.vio.items()
+    vio: list[dict]
 
 
 @define_app
@@ -29,12 +26,12 @@ class get_bounds_violation:
         pass
 
     def main(self, params: ParamRules) -> BoundsViolation:
-        vio = dict()
+        vio = []
         list_of_params = params.params
         for param in list_of_params:
             if param["par_name"] not in self.exclude_params:
                 if (abs(param["init"] - param["lower"]) <= 1e-10) or (
                     abs(param["init"] - param["upper"]) <= 1e-10
                 ):
-                    vio[param["par_name"]] = param["init"]
+                    vio.append(param)
         return BoundsViolation(source=params.source, vio=vio)
