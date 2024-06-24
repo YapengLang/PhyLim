@@ -9,7 +9,10 @@ keywords = ["biology", "genomics", "statistics", "phylogeny", "evolution", "bioi
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
-dependencies = ["click", "numpy", "scitrack"]
+dependencies = ["click", 
+                "numpy>=1.26", 
+                "scitrack",
+                "cogent3>=2024.5"]
 classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
