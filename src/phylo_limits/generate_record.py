@@ -66,4 +66,5 @@ class generate_record:
             message=result.message,
             boundary_values=boundary_values,
             ISCL_mcats={k: v for k, v in psubs_labelled.items() if v is not DLC},
+            version=result.version,
         )

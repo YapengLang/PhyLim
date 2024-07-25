@@ -7,6 +7,7 @@ from typing import Union
 from cogent3.app.composable import define_app
 from cogent3.core.tree import PhyloNode
 
+from phylo_limits._version import __version__
 from phylo_limits.classify_matrix import (
     CHAINSAW,
     IDENTITY,
@@ -109,6 +110,7 @@ class IdentCheckRes:
     identifiability: bool
     strict: bool
     message: Union[dict[str, Union[IdentMsgTypes, set]], None]
+    version: str
 
     def to_rich_dict(self) -> dict:
         result = {
@@ -116,6 +118,7 @@ class IdentCheckRes:
             "identifiability": self.identifiability,
             "strict": self.strict,
             "message": None,
+            "version": self.version,
         }
         if self.message:
             message = {}
@@ -147,6 +150,7 @@ class IdentifiabilityCheck:
                 identifiability=False,
                 strict=self.strict,
                 message={"name_type": BADMTX, "names": bad_mtx_names},
+                version=__version__,
             )
 
         bad_node_names = eval_paths(psubs.mcats, tree)
@@ -156,6 +160,7 @@ class IdentifiabilityCheck:
                 identifiability=False,
                 strict=self.strict,
                 message={"name_type": BADNODES, "names": bad_node_names},
+                version=__version__,
             )
 
         return IdentCheckRes(
@@ -163,4 +168,5 @@ class IdentifiabilityCheck:
             identifiability=True,
             strict=self.strict,
             message=None,
+            version=__version__,
         )
