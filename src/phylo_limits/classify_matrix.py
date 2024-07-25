@@ -95,6 +95,9 @@ class ModelMatrixCategories:
     source: str
     mcats: dict[tuple[str, ...], MatrixCategory]
 
+    def items(self):
+        return self.mcats.items()
+
 
 @define_app
 class classify_psubs:

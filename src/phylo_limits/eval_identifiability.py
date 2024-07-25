@@ -95,8 +95,8 @@ def eval_paths(mcats: dict[tuple[str, ...], MatrixCategory], tree: PhyloNode) ->
 
 
 class IdentMsgTypes(Enum):
-    badmtx = "bad matrices"
-    badnodes = "bad nodes"
+    badmtx = "matrices"
+    badnodes = "nodes"
 
 
 BADMTX = IdentMsgTypes.badmtx
@@ -108,8 +108,24 @@ class IdentCheckRes:
     source: str
     identifiability: bool
     strict: bool
-    message: Union[set, None]
-    message_type: Union[IdentMsgTypes, None]
+    message: Union[dict[str, Union[IdentMsgTypes, set]], None]
+
+    def to_rich_dict(self) -> dict:
+        result = {
+            "source": self.source,
+            "identifiability": self.identifiability,
+            "strict": self.strict,
+            "message": None,
+        }
+        if self.message:
+            message = {}
+            for k, v in self.message.items():
+                if isinstance(v, IdentMsgTypes):
+                    message[k] = v.value
+                elif isinstance(v, set):
+                    message[k] = list(v)
+            result["message"] = message
+        return result
 
 
 @define_app
@@ -123,22 +139,23 @@ class IdentifiabilityCheck:
         self.strict = strict
 
     def main(self, psubs: ModelMatrixCategories, tree: PhyloNode) -> IdentCheckRes:
-        mcats = psubs.mcats
-        if msg := eval_mcats(mcats, strict=self.strict):
+
+        bad_mtx_names = eval_mcats(psubs.mcats, strict=self.strict)
+        if bad_mtx_names:
             return IdentCheckRes(
                 source=psubs.source,
                 identifiability=False,
                 strict=self.strict,
-                message=msg,
-                message_type=BADMTX,
+                message={"name_type": BADMTX, "names": bad_mtx_names},
             )
-        if msg := eval_paths(mcats, tree):
+
+        bad_node_names = eval_paths(psubs.mcats, tree)
+        if bad_node_names:
             return IdentCheckRes(
                 source=psubs.source,
                 identifiability=False,
                 strict=self.strict,
-                message=msg,
-                message_type=BADNODES,
+                message={"name_type": BADNODES, "names": bad_node_names},
             )
 
         return IdentCheckRes(
@@ -146,5 +163,4 @@ class IdentifiabilityCheck:
             identifiability=True,
             strict=self.strict,
             message=None,
-            message_type=None,
         )

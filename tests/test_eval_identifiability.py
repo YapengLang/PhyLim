@@ -336,7 +336,7 @@ def test_identifiabilitycheck_badmtx():
     ident_app = IdentifiabilityCheck(strict=False)
     result = ident_app(psubs, tree)
     assert isinstance(result, IdentCheckRes)
-    assert result.message_type == BADMTX
+    assert result.message == {"name_type": BADMTX, "names": {"3"}}
 
 
 def test_identifiabilitycheck_badnodes():
@@ -348,4 +348,4 @@ def test_identifiabilitycheck_badnodes():
     ident_app = IdentifiabilityCheck(strict=False)
     result = ident_app(psubs, tree)
     assert isinstance(result, IdentCheckRes)
-    assert result.message_type == BADNODES
+    assert result.message == {"name_type": BADNODES, "names": {"root"}}
