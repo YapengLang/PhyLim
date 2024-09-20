@@ -7,7 +7,7 @@ from typing import Union
 from cogent3.app.composable import define_app
 from cogent3.core.tree import PhyloNode
 
-from phylo_limits._version import __version__
+from phylo_limits.__init__ import __version__
 from phylo_limits.classify_matrix import (
     CHAINSAW,
     IDENTITY,
