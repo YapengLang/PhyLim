@@ -5,13 +5,30 @@ from typing import Union
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
 
-from phylo_limits import parser
-from phylo_limits.check_boundary import get_bounds_violation
-from phylo_limits.classify_matrix import DLC, MatrixCategory, classify_psubs
+from phylo_limits.check_boundary import ParamRules, get_bounds_violation
+from phylo_limits.classify_matrix import (
+    DLC,
+    MatrixCategory,
+    ModelPsubs,
+    classify_psubs,
+)
 from phylo_limits.eval_identifiability import (
     IdentCheckRes,
     IdentifiabilityCheck,
 )
+
+
+# TODO: add typings
+def load_psubs(model_result: model_result) -> ModelPsubs:
+    """get psubs"""
+    return ModelPsubs(source=model_result.source, psubs=model_result.lf.get_all_psubs())  # type: ignore
+
+
+def load_param_values(model_result: model_result) -> ParamRules:
+    """get non-topology param values"""
+    return ParamRules(
+        source=model_result.source, params=model_result.lf.get_param_rules()  # type: ignore
+    )
 
 
 @dataclasses.dataclass(slots=True)
@@ -45,10 +62,10 @@ class generate_record:
     def __init__(self, strict=False) -> None:
         self.strict = strict
 
-    def main(self, model_res: model_result) -> PhyloLimitRec:
-        tree = parser.load_tree(model_res)
-        psubs = parser.load_psubs(model_res)
-        params = parser.load_param_values(model_res)
+    def main(self, model_result: model_result) -> PhyloLimitRec:
+        tree = model_result.lf.tree  # type: ignore
+        psubs = load_psubs(model_result)
+        params = load_param_values(model_result)
 
         clspsub_app = classify_psubs()
         bound_app = get_bounds_violation()
@@ -60,7 +77,7 @@ class generate_record:
 
         return PhyloLimitRec(
             source=result.source,
-            model_name=model_res.name,
+            model_name=model_result.name,
             identifiability=result.identifiability,
             strict=result.strict,
             message=result.message,

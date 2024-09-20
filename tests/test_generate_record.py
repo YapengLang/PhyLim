@@ -1,6 +1,6 @@
 from cogent3.util.deserialise import deserialise_object
 
-from phylo_limits.generate_record import PhyloLimitRec, generate_record
+from phylo_limits.record_limit import PhyloLimitRec, generate_record
 
 
 def test_generate_record():
