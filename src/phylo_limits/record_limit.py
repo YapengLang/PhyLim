@@ -18,7 +18,6 @@ from phylo_limits.eval_identifiability import (
 )
 
 
-# TODO: add typings
 def load_psubs(model_result: model_result) -> ModelPsubs:
     """get psubs"""
     return ModelPsubs(source=model_result.source, psubs=model_result.lf.get_all_psubs())  # type: ignore
