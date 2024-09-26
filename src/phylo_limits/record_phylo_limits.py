@@ -56,10 +56,10 @@ class generate_phylo_limit_record:
     Args:
         "strict" controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
     Return:
-        string in json format
+        PhyloLimitRec object
     """
 
-    def __init__(self, strict=False) -> None:
+    def __init__(self, strict: bool = False) -> None:
         self.strict = strict
 
     def main(self, model_result: model_result) -> PhyloLimitRec:
@@ -84,3 +84,27 @@ class generate_phylo_limit_record:
             boundary_values=boundary_values,
             ISCL_mcats={k: v for k, v in psubs_labelled.items() if v is not DLC},
         )
+
+
+@define_app
+class eval_identifiability:
+    """check the identifiability of a model.
+    Args:
+        strict: controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
+    Return:
+        bool value of identifiability
+    """
+
+    def __init__(self, strict: bool = False) -> None:
+        self.strict = strict
+
+    def main(self, model_result: model_result) -> bool:
+        tree = model_result.lf.tree  # type: ignore
+        psubs = load_psubs(model_result)
+
+        clspsub_app = classify_psubs()
+        Ident_app = IdentifiabilityCheck(strict=self.strict)
+
+        psubs_labelled = clspsub_app(psubs)
+        result = Ident_app(psubs_labelled, tree)
+        return result.identifiability
