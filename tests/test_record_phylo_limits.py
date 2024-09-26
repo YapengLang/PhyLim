@@ -2,9 +2,9 @@ from cogent3.util.deserialise import deserialise_object
 
 from phylo_limits.check_boundary import ParamRules
 from phylo_limits.classify_matrix import ModelPsubs
-from phylo_limits.record_limit import (
+from phylo_limits.record_phylo_limits import (
     PhyloLimitRec,
-    generate_record,
+    generate_phylo_limit_record,
     load_param_values,
     load_psubs,
 )
@@ -26,7 +26,7 @@ def test_generate_record():
     model_res = deserialise_object(
         "data/eval_identifiability/unid_model_result.json"
     )  # two I
-    rec_app = generate_record()  # default `strict` == F
+    rec_app = generate_phylo_limit_record()  # default `strict` == F
     record = rec_app(model_res)
     assert isinstance(record, PhyloLimitRec) == True
     assert record.strict == False
@@ -36,7 +36,7 @@ def test_generate_record_strict_control():
     model_res = deserialise_object(
         "data/eval_identifiability/unid_model_result.json"
     )  # two I
-    rec_app = generate_record(strict=True)  # set `strict`
+    rec_app = generate_phylo_limit_record(strict=True)  # set `strict`
     record = rec_app(model_res)
     assert isinstance(record, PhyloLimitRec) == True
     assert record.strict == True

@@ -5,6 +5,7 @@ from typing import Union
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
 
+from phylo_limits.__init__ import __version__
 from phylo_limits.check_boundary import ParamRules, get_bounds_violation
 from phylo_limits.classify_matrix import (
     DLC,
@@ -50,7 +51,7 @@ class PhyloLimitRec(IdentCheckRes):
 
 
 @define_app
-class generate_record:
+class generate_phylo_limit_record:
     """record psubs classes, identifiability, boundary values etc.
     Args:
         "strict" controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
@@ -82,5 +83,5 @@ class generate_record:
             message=result.message,
             boundary_values=boundary_values,
             ISCL_mcats={k: v for k, v in psubs_labelled.items() if v is not DLC},
-            version=result.version,
+            version=__version__,
         )
