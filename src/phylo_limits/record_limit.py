@@ -36,7 +36,7 @@ class PhyloLimitRec(IdentCheckRes):
 
     model_name: Union[str, None]
     boundary_values: Union[list[dict], None]
-    ISCL_mcats: Union[dict[tuple[str], MatrixCategory], None]
+    ISCL_mcats: Union[dict[tuple[str, ...], MatrixCategory], None]
 
     def to_rich_dict(self) -> dict:
         result = IdentCheckRes.to_rich_dict(self)
