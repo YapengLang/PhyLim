@@ -2,6 +2,8 @@ import dataclasses
 
 from cogent3.app.composable import define_app
 
+from phylo_limits.__init__ import __version__
+
 
 @dataclasses.dataclass(slots=True)
 class ParamRules:
@@ -13,6 +15,9 @@ class ParamRules:
 class BoundsViolation:
     source: str
     vio: list[dict]
+
+    def to_rich_dict(self) -> dict:
+        return {"source": self.source, "vio": self.vio, "version": __version__}
 
 
 @define_app

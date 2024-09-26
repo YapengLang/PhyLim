@@ -110,7 +110,6 @@ class IdentCheckRes:
     identifiability: bool
     strict: bool
     message: Union[dict[str, Union[IdentMsgTypes, set]], None]
-    version: str
 
     def to_rich_dict(self) -> dict:
         result = {
@@ -118,7 +117,7 @@ class IdentCheckRes:
             "identifiability": self.identifiability,
             "strict": self.strict,
             "message": None,
-            "version": self.version,
+            "version": __version__,
         }
         if self.message:
             message = {}
@@ -150,7 +149,6 @@ class IdentifiabilityCheck:
                 identifiability=False,
                 strict=self.strict,
                 message={"name_type": BADMTX, "names": bad_mtx_names},
-                version=__version__,
             )
 
         bad_node_names = eval_paths(psubs.mcats, tree)
@@ -160,7 +158,6 @@ class IdentifiabilityCheck:
                 identifiability=False,
                 strict=self.strict,
                 message={"name_type": BADNODES, "names": bad_node_names},
-                version=__version__,
             )
 
         return IdentCheckRes(
@@ -168,5 +165,4 @@ class IdentifiabilityCheck:
             identifiability=True,
             strict=self.strict,
             message=None,
-            version=__version__,
         )

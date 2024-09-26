@@ -8,6 +8,8 @@ from cogent3.app.composable import define_app
 from cogent3.util.dict_array import DictArray
 from numpy import allclose, eye, ndarray, tile
 
+from phylo_limits.__init__ import __version__
+
 
 class MatrixCategory(Enum):
     identity = "identity"
@@ -97,6 +99,13 @@ class ModelMatrixCategories:
 
     def items(self):
         return self.mcats.items()
+
+    def to_rich_dict(self) -> dict:
+        return {
+            "source": self.source,
+            "mcats": {k: v.value for k, v in self.mcats.items()},
+            "version": __version__,
+        }
 
 
 @define_app

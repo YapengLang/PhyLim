@@ -46,7 +46,7 @@ class PhyloLimitRec(IdentCheckRes):
         result["ISCL_mcats"] = {}
         if self.ISCL_mcats:
             result["ISCL_mcats"] = {k[0]: v.value for k, v in self.ISCL_mcats.items()}
-
+        result["version"] = __version__
         return result
 
 
@@ -83,5 +83,4 @@ class generate_phylo_limit_record:
             message=result.message,
             boundary_values=boundary_values,
             ISCL_mcats={k: v for k, v in psubs_labelled.items() if v is not DLC},
-            version=__version__,
         )
