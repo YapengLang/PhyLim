@@ -6,12 +6,12 @@ from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
 
 from phylo_limits.__init__ import __version__
-from phylo_limits.check_boundary import ParamRules, get_bounds_violation
+from phylo_limits.check_boundary import ParamRules, check_boundary
 from phylo_limits.classify_matrix import (
     DLC,
     MatrixCategory,
     ModelPsubs,
-    classify_psubs,
+    classify_matrix,
 )
 from phylo_limits.eval_identifiability import (
     IdentCheckRes,
@@ -31,6 +31,7 @@ def load_param_values(model_result: model_result) -> ParamRules:
     )
 
 
+# a rich dataclass to store bound violations, ISCL matrices, etc., besides identifiability
 @dataclasses.dataclass(slots=True)
 class PhyloLimitRec(IdentCheckRes):
     """the record of phylogenetic limits"""
@@ -52,9 +53,10 @@ class PhyloLimitRec(IdentCheckRes):
 
 @define_app
 class generate_phylo_limit_record:
-    """record psubs classes, identifiability, boundary values etc.
+    """record psubs classes, identifiability, boundary values etc of a model_result.
     Args:
-        "strict" controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
+        "strict" controls the sensitivity for Identity matrix (I); if false,
+        treat I as DLC.
     Return:
         PhyloLimitRec object
     """
@@ -67,8 +69,8 @@ class generate_phylo_limit_record:
         psubs = load_psubs(model_result)
         params = load_param_values(model_result)
 
-        boundary_values = get_bounds_violation(params).vio
-        psubs_labelled = classify_psubs(psubs)
+        boundary_values = check_boundary(params).vio
+        psubs_labelled = classify_matrix(psubs)
         result = eval_identifiability(psubs_labelled, tree, self.strict)
 
         return PhyloLimitRec(
@@ -84,20 +86,26 @@ class generate_phylo_limit_record:
 
 @define_app
 class check_identifiability:
-    """check the identifiability of a model.
+    """check the identifiability of a model_result.
     Args:
-        strict: controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
+        strict: controls the sensitivity for Identity matrix (I);
+        if false, treat I as DLC.
+        details: controls the output format.
     Return:
-        bool value of identifiability
+        detailed result if self.details is True, otherwise a boolean
+        indicating identifiability.
     """
 
-    def __init__(self, strict: bool = False) -> None:
+    def __init__(self, strict: bool = False, details: bool = False) -> None:
         self.strict = strict
+        self.details = details
 
-    def main(self, model_result: model_result) -> bool:
+    def main(self, model_result: model_result) -> Union[bool, IdentCheckRes]:
         tree = model_result.lf.tree  # type: ignore
         psubs = load_psubs(model_result)
 
-        psubs_labelled = classify_psubs(psubs)
+        psubs_labelled = classify_matrix(psubs)
         result = eval_identifiability(psubs_labelled, tree, self.strict)
+        if self.details:
+            return result
         return result.identifiability

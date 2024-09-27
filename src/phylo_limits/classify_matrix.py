@@ -4,7 +4,6 @@ from enum import Enum
 
 import numpy
 
-from cogent3.app.composable import define_app
 from cogent3.util.dict_array import DictArray
 from numpy import allclose, eye, ndarray, tile
 
@@ -103,12 +102,12 @@ class ModelMatrixCategories:
     def to_rich_dict(self) -> dict:
         return {
             "source": self.source,
-            "mcats": {k: v.value for k, v in self.mcats.items()},
+            "mcats": {k: v.value for k, v in self.items()},
             "version": __version__,
         }
 
 
-def classify_psubs(psubs: ModelPsubs) -> ModelMatrixCategories:
+def classify_matrix(psubs: ModelPsubs) -> ModelMatrixCategories:
     """labels all psubs in a given ModelPsubs object which has source info"""
     labelled_psubs_dict = {}
     for key, value in psubs.items():

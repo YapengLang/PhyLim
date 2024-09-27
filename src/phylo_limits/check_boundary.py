@@ -1,7 +1,5 @@
 import dataclasses
 
-from cogent3.app.composable import define_app
-
 from phylo_limits.__init__ import __version__
 
 
@@ -23,7 +21,7 @@ class BoundsViolation:
 EXCLUDE_PARS = "length", "mprobs"
 
 
-def get_bounds_violation(params: ParamRules) -> BoundsViolation:
+def check_boundary(params: ParamRules) -> BoundsViolation:
     """check if there are any rate params proximity to the bounds as 1e-10.
     This value is important as two clusters of fits divided by the value."""
 

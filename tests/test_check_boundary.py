@@ -3,7 +3,7 @@ import pytest
 from phylo_limits.check_boundary import (
     BoundsViolation,
     ParamRules,
-    get_bounds_violation,
+    check_boundary,
 )
 
 
@@ -59,6 +59,6 @@ from phylo_limits.check_boundary import (
 )
 def test_get_bounds_violation(param_input, expected):
     test_input = ParamRules(source="foo", params=param_input)
-    result = get_bounds_violation(test_input)
+    result = check_boundary(test_input)
     assert isinstance(result, BoundsViolation)
     assert result.vio == expected

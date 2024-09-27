@@ -4,7 +4,6 @@ from enum import Enum
 from itertools import chain
 from typing import Union
 
-from cogent3.app.composable import define_app
 from cogent3.core.tree import PhyloNode
 
 from phylo_limits.__init__ import __version__
@@ -133,7 +132,7 @@ class IdentCheckRes:
 def eval_identifiability(
     psubs: ModelMatrixCategories, tree: PhyloNode, strict: bool
 ) -> IdentCheckRes:
-    """check the identifiability of a model.
+    """check the identifiability of a model fit, provided tree and matrices categories.
     Args:
         strict: controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
     """

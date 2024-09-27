@@ -9,8 +9,8 @@ from phylo_limits.classify_matrix import (
     SYMPATHETIC,
     ModelMatrixCategories,
     ModelPsubs,
+    classify_matrix,
     classify_psub,
-    classify_psubs,
     is_chainsaw,
     is_dlc,
     is_identity,
@@ -114,4 +114,4 @@ def test_classify_psubs(make_dlc):
 
     psub = {(str("bar"),): dict_array.DictArray(make_dlc())}
     mpsubs = ModelPsubs(source="foo", psubs=psub)
-    assert isinstance(classify_psubs(mpsubs), ModelMatrixCategories)
+    assert isinstance(classify_matrix(mpsubs), ModelMatrixCategories)
