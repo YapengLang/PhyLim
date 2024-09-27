@@ -130,39 +130,34 @@ class IdentCheckRes:
         return result
 
 
-@define_app
-class IdentifiabilityCheck:
+def eval_identifiability(
+    psubs: ModelMatrixCategories, tree: PhyloNode, strict: bool
+) -> IdentCheckRes:
     """check the identifiability of a model.
     Args:
         strict: controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
     """
-
-    def __init__(self, strict: bool) -> None:
-        self.strict = strict
-
-    def main(self, psubs: ModelMatrixCategories, tree: PhyloNode) -> IdentCheckRes:
-
-        bad_mtx_names = eval_mcats(psubs.mcats, strict=self.strict)
-        if bad_mtx_names:
-            return IdentCheckRes(
-                source=psubs.source,
-                identifiability=False,
-                strict=self.strict,
-                message={"name_type": BADMTX, "names": bad_mtx_names},
-            )
-
-        bad_node_names = eval_paths(psubs.mcats, tree)
-        if bad_node_names:
-            return IdentCheckRes(
-                source=psubs.source,
-                identifiability=False,
-                strict=self.strict,
-                message={"name_type": BADNODES, "names": bad_node_names},
-            )
-
+    bad_mtx_names = eval_mcats(psubs.mcats, strict=strict)
+    if bad_mtx_names:
         return IdentCheckRes(
             source=psubs.source,
-            identifiability=True,
-            strict=self.strict,
-            message=None,
+            identifiability=False,
+            strict=strict,
+            message={"name_type": BADMTX, "names": bad_mtx_names},
         )
+
+    bad_node_names = eval_paths(psubs.mcats, tree)
+    if bad_node_names:
+        return IdentCheckRes(
+            source=psubs.source,
+            identifiability=False,
+            strict=strict,
+            message={"name_type": BADNODES, "names": bad_node_names},
+        )
+
+    return IdentCheckRes(
+        source=psubs.source,
+        identifiability=True,
+        strict=strict,
+        message=None,
+    )

@@ -59,7 +59,6 @@ from phylo_limits.check_boundary import (
 )
 def test_get_bounds_violation(param_input, expected):
     test_input = ParamRules(source="foo", params=param_input)
-    check_app = get_bounds_violation()
-    result = check_app(test_input)
+    result = get_bounds_violation(test_input)
     assert isinstance(result, BoundsViolation)
     assert result.vio == expected

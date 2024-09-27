@@ -114,5 +114,4 @@ def test_classify_psubs(make_dlc):
 
     psub = {(str("bar"),): dict_array.DictArray(make_dlc())}
     mpsubs = ModelPsubs(source="foo", psubs=psub)
-    cls_app = classify_psubs()
-    assert isinstance(cls_app(mpsubs), ModelMatrixCategories)
+    assert isinstance(classify_psubs(mpsubs), ModelMatrixCategories)

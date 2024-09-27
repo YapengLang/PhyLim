@@ -108,14 +108,11 @@ class ModelMatrixCategories:
         }
 
 
-@define_app
-class classify_psubs:
+def classify_psubs(psubs: ModelPsubs) -> ModelMatrixCategories:
     """labels all psubs in a given ModelPsubs object which has source info"""
+    labelled_psubs_dict = {}
+    for key, value in psubs.items():
+        p_matrix = value.to_array()
+        labelled_psubs_dict[key] = classify_psub(p_matrix)
 
-    def main(self, psubs: ModelPsubs) -> ModelMatrixCategories:
-        labelled_psubs_dict = {}
-        for key, value in psubs.items():
-            p_matrix = value.to_array()
-            labelled_psubs_dict[key] = classify_psub(p_matrix)
-
-        return ModelMatrixCategories(source=psubs.source, mcats=labelled_psubs_dict)
+    return ModelMatrixCategories(source=psubs.source, mcats=labelled_psubs_dict)

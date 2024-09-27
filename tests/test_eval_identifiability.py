@@ -13,9 +13,9 @@ from phylo_limits.eval_identifiability import (
     BADMTX,
     BADNODES,
     IdentCheckRes,
-    IdentifiabilityCheck,
     ModelMatrixCategories,
     break_path,
+    eval_identifiability,
     eval_mcats,
     eval_paths,
     find_bad_nodes,
@@ -333,8 +333,7 @@ def test_identifiabilitycheck_badmtx():
         source="foo", mcats={("1",): DLC, ("2",): DLC, ("3",): CHAINSAW}
     )
     tree = make_tree("(1,2,3);")
-    ident_app = IdentifiabilityCheck(strict=False)
-    result = ident_app(psubs, tree)
+    result = eval_identifiability(psubs, tree, strict=False)
     assert isinstance(result, IdentCheckRes)
     assert result.message == {"name_type": BADMTX, "names": {"3"}}
 
@@ -345,7 +344,6 @@ def test_identifiabilitycheck_badnodes():
         mcats={("1",): SYMPATHETIC, ("2",): SYMPATHETIC, ("3",): SYMPATHETIC},
     )
     tree = make_tree("(1,2,3);")
-    ident_app = IdentifiabilityCheck(strict=False)
-    result = ident_app(psubs, tree)
+    result = eval_identifiability(psubs, tree, strict=False)
     assert isinstance(result, IdentCheckRes)
     assert result.message == {"name_type": BADNODES, "names": {"root"}}

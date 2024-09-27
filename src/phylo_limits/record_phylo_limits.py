@@ -15,7 +15,7 @@ from phylo_limits.classify_matrix import (
 )
 from phylo_limits.eval_identifiability import (
     IdentCheckRes,
-    IdentifiabilityCheck,
+    eval_identifiability,
 )
 
 
@@ -67,13 +67,9 @@ class generate_phylo_limit_record:
         psubs = load_psubs(model_result)
         params = load_param_values(model_result)
 
-        clspsub_app = classify_psubs()
-        bound_app = get_bounds_violation()
-        Ident_app = IdentifiabilityCheck(strict=self.strict)
-
-        boundary_values = bound_app(params).vio
-        psubs_labelled = clspsub_app(psubs)
-        result = Ident_app(psubs_labelled, tree)
+        boundary_values = get_bounds_violation(params).vio
+        psubs_labelled = classify_psubs(psubs)
+        result = eval_identifiability(psubs_labelled, tree, self.strict)
 
         return PhyloLimitRec(
             source=result.source,
@@ -87,7 +83,7 @@ class generate_phylo_limit_record:
 
 
 @define_app
-class eval_identifiability:
+class check_identifiability:
     """check the identifiability of a model.
     Args:
         strict: controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
@@ -102,9 +98,6 @@ class eval_identifiability:
         tree = model_result.lf.tree  # type: ignore
         psubs = load_psubs(model_result)
 
-        clspsub_app = classify_psubs()
-        Ident_app = IdentifiabilityCheck(strict=self.strict)
-
-        psubs_labelled = clspsub_app(psubs)
-        result = Ident_app(psubs_labelled, tree)
+        psubs_labelled = classify_psubs(psubs)
+        result = eval_identifiability(psubs_labelled, tree, self.strict)
         return result.identifiability
