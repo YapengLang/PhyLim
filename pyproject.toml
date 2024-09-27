@@ -84,3 +84,9 @@ lines_after_imports=2
 lines_between_types=1
 multi_line_output=3
 use_parentheses=true
+
+[project.entry-points."cogent3.app"]
+check_fit_boundary = "phylo_limits.record_phylo_limits:check_fit_boundary"
+classify_model_psubs = "phylo_limits.record_phylo_limits:classify_model_psubs"
+check_identifiability = "phylo_limits.record_phylo_limits:check_identifiability"
+generate_phylo_limit_record = "phylo_limits.record_phylo_limits:generate_phylo_limit_record"
