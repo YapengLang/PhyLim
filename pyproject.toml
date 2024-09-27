@@ -28,8 +28,6 @@ dynamic = ["version", "description"]
 [project.sdist]
 include = ["src/*", "pyproject.toml"]
 
-[project.scripts]
-phylo-limits = "phylo_limits.cli:main"
 
 [project.optional-dependencies]
 test = [
