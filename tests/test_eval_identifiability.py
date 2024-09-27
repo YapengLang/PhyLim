@@ -347,3 +347,18 @@ def test_identifiabilitycheck_badnodes():
     result = eval_identifiability(psubs, tree, strict=False)
     assert isinstance(result, IdentCheckRes)
     assert result.message == {"name_type": BADNODES, "names": {"root"}}
+
+
+def test_to_rich_dict_identcheckres():
+    test_input = IdentCheckRes(
+        source="foo",
+        identifiability=False,
+        strict=False,
+        message={"name_type": BADMTX, "names": {"3"}},
+    )
+    result = test_input.to_rich_dict()
+    assert isinstance(result, dict) == True
+    assert all(
+        k in result
+        for k in ["source", "identifiability", "strict", "message", "version"]
+    )

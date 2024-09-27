@@ -57,8 +57,26 @@ from phylo_limits.check_boundary import (
         )
     ],
 )
-def test_get_bounds_violation(param_input, expected):
+def test_check_boundary(param_input, expected):
     test_input = ParamRules(source="foo", params=param_input)
     result = check_boundary(test_input)
     assert isinstance(result, BoundsViolation)
     assert result.vio == expected
+
+
+def test_to_rich_dict_boundsviolation():
+    test_input = BoundsViolation(
+        source="foo",
+        vio=[
+            {
+                "par_name": "A/G",
+                "edge": "878",
+                "init": 1.0000000991577895e-06,
+                "lower": 1e-06,
+                "upper": 200,
+            }
+        ],
+    )
+    result = test_input.to_rich_dict()
+    assert isinstance(result, dict) == True
+    assert all(k in result for k in ["source", "vio", "version"])

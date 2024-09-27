@@ -1,3 +1,5 @@
+import pathlib
+
 import numpy
 import pytest
 
@@ -16,6 +18,9 @@ from phylo_limits.classify_matrix import (
     is_identity,
     is_limit,
 )
+
+
+DATADIR = pathlib.Path(__file__).parent / "data"
 
 
 @pytest.mark.parametrize(
@@ -74,7 +79,7 @@ def test_is_chainsaw_by_dlc(make_dlc):
 
 
 def test_is_chainsaw_by_sym_empir():
-    with open("data/matrices/sympathetic1.npy", "rb") as f:
+    with open(f"{DATADIR}/matrices/sympathetic1.npy", "rb") as f:
         m = numpy.load(f)
     assert is_chainsaw(m) == False
 
@@ -84,7 +89,7 @@ def test_is_limit(make_limit):
 
 
 def test_is_limit_by_sym_empir():
-    with open("data/matrices/sympathetic1.npy", "rb") as f:
+    with open(f"{DATADIR}/matrices/sympathetic1.npy", "rb") as f:
         m = numpy.load(f)
     assert is_limit(m) == False
 
@@ -100,7 +105,7 @@ def test_classify_psub_by_fixtures(mtx_input, expected, request):
 
 
 def test_classify_psub_by_sym_empir():
-    with open("data/matrices/sympathetic1.npy", "rb") as f:
+    with open(f"{DATADIR}/matrices/sympathetic1.npy", "rb") as f:
         m = numpy.load(f)
     assert classify_psub(m) == SYMPATHETIC
 
