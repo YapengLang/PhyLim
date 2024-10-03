@@ -94,39 +94,40 @@ def eval_paths(mcats: dict[tuple[str, ...], MatrixCategory], tree: PhyloNode) ->
     return bad_nodes
 
 
-class IdentMsgTypes(Enum):
-    badmtx = "matrices"
-    badnodes = "nodes"
+class ViolationType(Enum):
+    bad_matrices = "bad_matrices"
+    bad_nodes = "bad_nodes"
+    none = "none"  # the model is identifiable
 
 
-BADMTX = IdentMsgTypes.badmtx
-BADNODES = IdentMsgTypes.badnodes
+BADMTX = ViolationType.bad_matrices
+BADNODES = ViolationType.bad_nodes
+IDENTIFIABLE = ViolationType.none
 
 
 @dataclasses.dataclass(slots=True)
 class IdentCheckRes:
     source: str
-    identifiability: bool
     strict: bool
-    message: Union[dict[str, Union[IdentMsgTypes, set]], None]
+    names: Union[set[str], None]
+    violation_type: ViolationType
 
     def to_rich_dict(self) -> dict:
         result = {
             "source": self.source,
-            "identifiability": self.identifiability,
             "strict": self.strict,
-            "message": None,
+            "names": None,
+            "violation_type": self.violation_type.name,
             "version": __version__,
         }
-        if self.message:
-            message = {}
-            for k, v in self.message.items():
-                if isinstance(v, IdentMsgTypes):
-                    message[k] = v.value
-                elif isinstance(v, set):
-                    message[k] = list(v)
-            result["message"] = message
+        if self.names:
+            result["names"] = list(self.names)
+
         return result
+
+    @property
+    def is_identifiable(self) -> bool:
+        return self.violation_type is IDENTIFIABLE
 
 
 def eval_identifiability(
@@ -140,23 +141,23 @@ def eval_identifiability(
     if bad_mtx_names:
         return IdentCheckRes(
             source=psubs.source,
-            identifiability=False,
             strict=strict,
-            message={"name_type": BADMTX, "names": bad_mtx_names},
+            names=bad_mtx_names,
+            violation_type=BADMTX,
         )
 
     bad_node_names = eval_paths(psubs.mcats, tree)
     if bad_node_names:
         return IdentCheckRes(
             source=psubs.source,
-            identifiability=False,
             strict=strict,
-            message={"name_type": BADNODES, "names": bad_node_names},
+            names=bad_node_names,
+            violation_type=BADNODES,
         )
 
     return IdentCheckRes(
         source=psubs.source,
-        identifiability=True,
         strict=strict,
-        message=None,
+        names=None,
+        violation_type=IDENTIFIABLE,
     )
