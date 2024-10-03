@@ -363,4 +363,3 @@ def test_to_rich_dict_identcheckres():
     assert all(
         k in result for k in ["source", "strict", "names", "violation_type", "version"]
     )
-    print(result)

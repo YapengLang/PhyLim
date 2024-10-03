@@ -12,7 +12,6 @@ from phylo_limits.apps import (
 )
 from phylo_limits.check_boundary import BoundsViolation, ParamRules
 from phylo_limits.classify_matrix import ModelMatrixCategories, ModelPsubs
-from phylo_limits.eval_identifiability import IdentCheckRes
 
 
 DATADIR = pathlib.Path(__file__).parent / "data"
@@ -76,6 +75,15 @@ def test_to_rich_dict_phylolimitrec():
             "version",
         ]
     )
+
+
+def test_violation_type_phylolimitrec():
+    model_res = deserialise_object(
+        f"{DATADIR}/eval_identifiability/unid_model_result.json"
+    )
+    rec_app = phylo_limits()
+    record = rec_app(model_res)
+    assert record.violation_type == None
 
 
 def test_classify_model_psubs():
