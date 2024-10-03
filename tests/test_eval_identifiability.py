@@ -12,6 +12,7 @@ from phylo_limits.classify_matrix import (
 from phylo_limits.eval_identifiability import (
     BADMTX,
     BADNODES,
+    IDENTIFIABLE,
     IdentCheckRes,
     ModelMatrixCategories,
     break_path,
@@ -335,7 +336,9 @@ def test_identifiabilitycheck_badmtx():
     tree = make_tree("(1,2,3);")
     result = eval_identifiability(psubs, tree, strict=False)
     assert isinstance(result, IdentCheckRes)
-    assert result.message == {"name_type": BADMTX, "names": {"3"}}
+    assert result.violation_type == BADMTX
+    assert result.names == {"3"}
+    assert result.is_identifiable == False
 
 
 def test_identifiabilitycheck_badnodes():
@@ -346,19 +349,18 @@ def test_identifiabilitycheck_badnodes():
     tree = make_tree("(1,2,3);")
     result = eval_identifiability(psubs, tree, strict=False)
     assert isinstance(result, IdentCheckRes)
-    assert result.message == {"name_type": BADNODES, "names": {"root"}}
+    assert result.violation_type == BADNODES
+    assert result.names == {"root"}
+    assert result.is_identifiable == False
 
 
 def test_to_rich_dict_identcheckres():
     test_input = IdentCheckRes(
-        source="foo",
-        identifiability=False,
-        strict=False,
-        message={"name_type": BADMTX, "names": {"3"}},
+        source="foo", strict=False, names=None, violation_type=IDENTIFIABLE
     )
     result = test_input.to_rich_dict()
     assert isinstance(result, dict) == True
     assert all(
-        k in result
-        for k in ["source", "identifiability", "strict", "message", "version"]
+        k in result for k in ["source", "strict", "names", "violation_type", "version"]
     )
+    print(result)
