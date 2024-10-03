@@ -3,6 +3,8 @@ import pathlib
 import numpy
 import pytest
 
+from cogent3.util.table import Table
+
 from phylo_limits.classify_matrix import (
     CHAINSAW,
     DLC,
@@ -112,6 +114,24 @@ def test_classify_psub_by_sym_empir():
 
 def test_classify_psub_by_I():
     assert classify_psub(numpy.eye(4)) == IDENTITY
+
+
+def test_to_rich_dict_modelmatrixcategories():
+    labelled = ModelMatrixCategories(source="foo", mcats={("bar",): CHAINSAW})
+    result = labelled.to_rich_dict()
+    assert all(k in result for k in ["source", "mcats", "version"])
+
+
+def test_to_table_modelmatrixcategories():
+    labelled = ModelMatrixCategories(source="foo", mcats={("bar",): CHAINSAW})
+    result = labelled.to_table()
+    assert isinstance(result, Table)
+
+
+def test_repr_html_modelmatrixcategories():
+    labelled = ModelMatrixCategories(source="foo", mcats={("bar",): CHAINSAW})
+    result = labelled._repr_html_()
+    assert isinstance(result, str)
 
 
 def test_classify_psubs(make_dlc):

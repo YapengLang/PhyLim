@@ -1,6 +1,7 @@
 import pathlib
 
 from cogent3.util.deserialise import deserialise_object
+from cogent3.util.table import Table
 
 from phylo_limits.apps import (
     PhyloLimitRec,
@@ -84,6 +85,35 @@ def test_violation_type_phylolimitrec():
     rec_app = phylo_limits()
     record = rec_app(model_res)
     assert record.violation_type == None
+
+
+def test_has_bv_phylolimitrec():
+    model_res = deserialise_object(
+        f"{DATADIR}/eval_identifiability/unid_model_result.json"
+    )
+    rec_app = phylo_limits()
+    record = rec_app(model_res)
+    assert record.has_BV == True
+
+
+def test_to_table_phylolimitrec():
+    model_res = deserialise_object(
+        f"{DATADIR}/eval_identifiability/unid_model_result.json"
+    )
+    rec_app = phylo_limits()
+    record = rec_app(model_res)
+    result = record.to_table()
+    assert isinstance(result, Table) == True
+
+
+def test_repr_html_phylolimitrec():
+    model_res = deserialise_object(
+        f"{DATADIR}/eval_identifiability/unid_model_result.json"
+    )
+    rec_app = phylo_limits()
+    record = rec_app(model_res)
+    result = record._repr_html_()
+    assert isinstance(result, str) == True
 
 
 def test_classify_model_psubs():
