@@ -111,7 +111,7 @@ class PhyloLimitRec:
 
         return Table(header=headers, data=rows, title="Phylo Limits Record")
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         table = self.to_table()
         table.set_repr_policy(show_shape=False)
         return table._repr_html_()
