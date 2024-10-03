@@ -4,6 +4,7 @@ from typing import Union
 
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
+from cogent3.util.table import Table
 
 from phylo_limits.__init__ import __version__
 from phylo_limits.check_boundary import (
@@ -83,8 +84,37 @@ class PhyloLimitRec:
         return self.check.is_identifiable
 
     @property
+    def has_BV(self) -> bool:
+        return bool(self.boundary_values)
+
+    @property
     def violation_type(self) -> str | None:
         return None if self.is_identifiable else self.check.violation_type.name
+
+    def to_table(self) -> Table:
+        headers = [
+            "source",
+            "model name",
+            "identifiable",
+            "has boundary values",
+            "version",
+        ]
+        rows = [
+            [
+                self.check.source,
+                self.model_name,
+                self.is_identifiable,
+                self.has_BV,
+                __version__,
+            ]
+        ]
+
+        return Table(header=headers, data=rows, title="Phylo Limits Record")
+
+    def _repr_html_(self):
+        table = self.to_table()
+        table.set_repr_policy(show_shape=False)
+        return table._repr_html_()
 
 
 @define_app

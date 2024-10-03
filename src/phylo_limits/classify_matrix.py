@@ -5,6 +5,7 @@ from enum import Enum
 import numpy
 
 from cogent3.util.dict_array import DictArray
+from cogent3.util.table import Table
 from numpy import allclose, eye, ndarray, tile
 
 from phylo_limits.__init__ import __version__
@@ -105,6 +106,24 @@ class ModelMatrixCategories:
             "mcats": {k: v.value for k, v in self.items()},
             "version": __version__,
         }
+
+    def to_table(self) -> Table:
+        headers = [
+            "edge name",
+            "matrix category",
+        ]
+        rows = []
+        for edge, mcat in self.items():
+            rows.append([edge[0], mcat.value])
+
+        return Table(
+            header=headers, data=rows, title="Substitution Matrices Categories"
+        )
+
+    def _repr_html_(self):
+        table = self.to_table()
+        table.set_repr_policy(show_shape=False)
+        return table._repr_html_()
 
 
 def classify_matrix(psubs: ModelPsubs) -> ModelMatrixCategories:
