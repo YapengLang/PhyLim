@@ -1,9 +1,12 @@
+import collections
 import dataclasses
 
 from typing import Union
 
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
+from cogent3.core.tree import PhyloNode
+from cogent3.draw.dendrogram import Dendrogram
 from cogent3.util.table import Table
 
 from phylo_limits.__init__ import __version__
@@ -13,7 +16,11 @@ from phylo_limits.check_boundary import (
     check_boundary,
 )
 from phylo_limits.classify_matrix import (
+    CHAINSAW,
     DLC,
+    IDENTITY,
+    LIMIT,
+    SYMPATHETIC,
     MatrixCategory,
     ModelMatrixCategories,
     ModelPsubs,
@@ -148,3 +155,51 @@ class phylo_limits:
                 k: v for k, v in psubs_labelled.items() if v is not DLC
             },
         )
+
+
+@define_app
+class phylo_limits_colour_edges:
+    """colour edges based on the category of the psub
+    Args:
+        "edge_to_cat" keys are tree node names, values are category classes
+        "cat_to_colour" category to colour mapping"""
+
+    def __init__(
+        self,
+        edge_to_cat: dict[tuple[str, ...], MatrixCategory],
+        cat_to_colour: dict[MatrixCategory, str] = {
+            DLC: "#000000",
+            CHAINSAW: "#ED1B0C",
+            SYMPATHETIC: "#EB663B",
+            LIMIT: "#DA16FF",
+            IDENTITY: "#1616A7",
+        },
+        line_width: int = 2,
+        width: int = 600,
+        height: int = 600,
+        scale_position: str = "top right",
+    ) -> None:  # pragma: no cover
+        self._edge_to_cat = edge_to_cat
+        self._cat_to_colour = cat_to_colour
+        self._line_width = line_width
+        self._width = width
+        self._height = height
+        self._scale_position = scale_position
+
+    def main(self, tree: PhyloNode) -> Dendrogram:  # pragma: no cover
+        fig = tree.get_figure(width=self._width, height=self._height)
+        fig.scale_bar = self._scale_position
+
+        mcat_map = collections.defaultdict(list)
+        for k, v in self._edge_to_cat.items():
+            mcat_map[v].append(k[0])
+        for mcat, edges in mcat_map.items():
+            fig.style_edges(
+                edges=edges,
+                legendgroup=mcat.value,
+                line=dict(
+                    color=self._cat_to_colour[mcat],
+                    width=self._line_width,
+                ),
+            )
+        return fig
