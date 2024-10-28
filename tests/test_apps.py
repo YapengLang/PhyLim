@@ -1,7 +1,11 @@
 import pathlib
 
+import pytest
+
+from cogent3 import load_aligned_seqs
 from cogent3.util.deserialise import deserialise_object
 from cogent3.util.table import Table
+from numpy import allclose
 
 from phylo_limits.apps import (
     PhyloLimitRec,
@@ -10,12 +14,16 @@ from phylo_limits.apps import (
     load_param_values,
     load_psubs,
     phylo_limits,
+    phylo_limits_tree_to_likelihoodfunction,
 )
 from phylo_limits.check_boundary import BoundsViolation, ParamRules
 from phylo_limits.classify_matrix import ModelMatrixCategories, ModelPsubs
 
 
 DATADIR = pathlib.Path(__file__).parent / "data"
+
+# set alignment for computing likelihood
+_algn = load_aligned_seqs(f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna")
 
 
 def test_load_param_values():
@@ -132,3 +140,12 @@ def test_check_fit_boundary():
     check_app = check_fit_boundary()
     res = check_app(model_res)
     assert isinstance(res, BoundsViolation) == True
+
+
+@pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree"])
+def test_convert_piqtree_to_lf(tree_name):
+    tree = deserialise_object(f"{DATADIR}/piqtree2/{tree_name}.json")
+    converter = phylo_limits_tree_to_likelihoodfunction()
+    lf = converter(tree)
+    lf.set_alignment(_algn)
+    assert allclose(lf.lnL, tree.params["lnL"])
