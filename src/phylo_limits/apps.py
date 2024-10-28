@@ -7,6 +7,8 @@ from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
+from cogent3.evolve import predicate, substitution_model
+from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.table import Table
 
 from phylo_limits.__init__ import __version__
@@ -203,3 +205,28 @@ class phylo_limits_colour_edges:
                 ),
             )
         return fig
+
+
+@define_app
+class phylo_limits_tree_to_likelihoodfunction:
+    """convert a cogent3 tree to a likelihood function
+    Args:
+        "tree" a cogent3 tree object
+    Return:
+        AlignmentLikelihoodFunction
+    """
+
+    excludes = ["length", "mprobs"]
+
+    def main(self, tree: PhyloNode) -> AlignmentLikelihoodFunction:
+        params = tree.get_edge_vector()[0].params
+        mprobs = tree.params["mprobs"]
+
+        predicates = [
+            predicate.parse(k) for k in params.keys() if k not in self.excludes
+        ]
+        submodel = substitution_model.TimeReversibleNucleotide(predicates=predicates)
+        lf = submodel.make_likelihood_function(tree, aligned=True)
+        lf.set_motif_probs(mprobs)
+
+        return lf  # type: ignore # FIXME
