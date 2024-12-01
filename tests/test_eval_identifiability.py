@@ -2,14 +2,8 @@ import pytest
 
 from cogent3 import make_tree
 
-from phylo_limits.classify_matrix import (
-    CHAINSAW,
-    DLC,
-    IDENTITY,
-    LIMIT,
-    SYMPATHETIC,
-)
-from phylo_limits.eval_identifiability import (
+from phylim.classify_matrix import CHAINSAW, DLC, IDENTITY, LIMIT, SYMPATHETIC
+from phylim.eval_identifiability import (
     BADMTX,
     BADNODES,
     IDENTIFIABLE,

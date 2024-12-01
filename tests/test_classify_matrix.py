@@ -5,7 +5,7 @@ import pytest
 
 from cogent3.util.table import Table
 
-from phylo_limits.classify_matrix import (
+from phylim.classify_matrix import (
     CHAINSAW,
     DLC,
     IDENTITY,

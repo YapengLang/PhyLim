@@ -7,7 +7,7 @@ from cogent3.util.deserialise import deserialise_object
 from cogent3.util.table import Table
 from numpy import allclose
 
-from phylo_limits.apps import (
+from phylim.apps import (
     PhyloLimitRec,
     check_fit_boundary,
     classify_model_psubs,
@@ -16,8 +16,8 @@ from phylo_limits.apps import (
     phylo_limits,
     phylo_limits_tree_to_likelihoodfunction,
 )
-from phylo_limits.check_boundary import BoundsViolation, ParamRules
-from phylo_limits.classify_matrix import ModelMatrixCategories, ModelPsubs
+from phylim.check_boundary import BoundsViolation, ParamRules
+from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
 
 
 DATADIR = pathlib.Path(__file__).parent / "data"

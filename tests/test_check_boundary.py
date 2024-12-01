@@ -1,10 +1,6 @@
 import pytest
 
-from phylo_limits.check_boundary import (
-    BoundsViolation,
-    ParamRules,
-    check_boundary,
-)
+from phylim.check_boundary import BoundsViolation, ParamRules, check_boundary
 
 
 @pytest.mark.parametrize(
