@@ -13,8 +13,8 @@ from phylim.apps import (
     classify_model_psubs,
     load_param_values,
     load_psubs,
-    phylo_limits,
-    phylo_limits_tree_to_likelihoodfunction,
+    phylim,
+    phylim_tree_to_likelihoodfunction,
 )
 from phylim.check_boundary import BoundsViolation, ParamRules
 from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
@@ -42,7 +42,7 @@ def test_load_psubs():
 
 def test_generate_record():
     # two I
-    rec_app = phylo_limits()  # default `strict` == F
+    rec_app = phylim()  # default `strict` == F
     record = rec_app(_model_res)
     assert isinstance(record, PhyloLimitRec) == True
     assert record.check.strict == False
@@ -50,7 +50,7 @@ def test_generate_record():
 
 def test_generate_record_strict_control():
     # two I
-    rec_app = phylo_limits(strict=True)  # set `strict`
+    rec_app = phylim(strict=True)  # set `strict`
     record = rec_app(_model_res)
     assert isinstance(record, PhyloLimitRec) == True
     assert record.check.strict == True
@@ -58,7 +58,7 @@ def test_generate_record_strict_control():
 
 
 def test_to_rich_dict_phylolimitrec():
-    rec_app = phylo_limits(strict=True)
+    rec_app = phylim(strict=True)
     record = rec_app(_model_res)
     result = record.to_rich_dict()
     assert isinstance(result, dict) == True
@@ -78,26 +78,26 @@ def test_to_rich_dict_phylolimitrec():
 
 
 def test_violation_type_phylolimitrec():
-    rec_app = phylo_limits()
+    rec_app = phylim()
     record = rec_app(_model_res)
     assert record.violation_type == None
 
 
 def test_has_bv_phylolimitrec():
-    rec_app = phylo_limits()
+    rec_app = phylim()
     record = rec_app(_model_res)
     assert record.has_BV == True
 
 
 def test_to_table_phylolimitrec():
-    rec_app = phylo_limits()
+    rec_app = phylim()
     record = rec_app(_model_res)
     result = record.to_table()
     assert isinstance(result, Table) == True
 
 
 def test_repr_html_phylolimitrec():
-    rec_app = phylo_limits()
+    rec_app = phylim()
     record = rec_app(_model_res)
     result = record._repr_html_()
     assert isinstance(result, str) == True
@@ -118,7 +118,7 @@ def test_check_fit_boundary():
 @pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree"])
 def test_convert_piqtree_to_lf(tree_name):
     tree = deserialise_object(f"{DATADIR}/piqtree2/{tree_name}.json")
-    converter = phylo_limits_tree_to_likelihoodfunction()
+    converter = phylim_tree_to_likelihoodfunction()
     lf = converter(tree)
     lf.set_alignment(_algn)
     assert allclose(lf.lnL, tree.params["lnL"])

@@ -120,7 +120,7 @@ class PhyloLimitRec:
 
 
 @define_app
-class phylo_limits:
+class phylim:
     """record psubs classes, identifiability, boundary values etc of a model_result.
     Args:
         "strict" controls the sensitivity for Identity matrix (I); if false,
@@ -153,7 +153,7 @@ class phylo_limits:
 
 
 @define_app
-class phylo_limits_colour_edges:
+class phylim_colour_edges:
     """colour edges based on the category of the psub
     Args:
         "edge_to_cat" keys are tree node names, values are category classes
@@ -201,7 +201,7 @@ class phylo_limits_colour_edges:
 
 
 @define_app
-class phylo_limits_tree_to_likelihoodfunction:
+class phylim_tree_to_likelihoodfunction:
     """convert a cogent3 tree to a likelihood function
     Args:
         "tree" a cogent3 tree object
