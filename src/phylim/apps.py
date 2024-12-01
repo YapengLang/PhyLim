@@ -11,8 +11,8 @@ from cogent3.evolve import predicate, substitution_model
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.table import Table
 
-from phylim.__init__ import __version__
-from phylim.check_boundary import BoundsViolation, ParamRules, check_boundary
+from phylim import check_fit_boundary, classify_model_psubs
+from phylim._version import __version__
 from phylim.classify_matrix import (
     CHAINSAW,
     DLC,
@@ -20,43 +20,8 @@ from phylim.classify_matrix import (
     LIMIT,
     SYMPATHETIC,
     MatrixCategory,
-    ModelMatrixCategories,
-    ModelPsubs,
-    classify_matrix,
 )
 from phylim.eval_identifiability import IdentCheckRes, eval_identifiability
-
-
-def load_psubs(model_result: model_result) -> ModelPsubs:
-    """get psubs"""
-    return ModelPsubs(source=model_result.source, psubs=model_result.lf.get_all_psubs())  # type: ignore
-
-
-def load_param_values(model_result: model_result) -> ParamRules:
-    """get non-topology param values"""
-    return ParamRules(
-        source=model_result.source, params=model_result.lf.get_param_rules()  # type: ignore
-    )
-
-
-@define_app
-class check_fit_boundary:
-    """check if there are any rate params proximity to the bounds as 1e-10.
-    This value is important as two clusters of fits divided by the value.
-    """
-
-    def main(self, model_result: model_result) -> BoundsViolation:
-        params = load_param_values(model_result)
-        return check_boundary(params)
-
-
-@define_app
-class classify_model_psubs:
-    """labels all psubs in a given ModelPsubs object which has source info"""
-
-    def main(self, model_result: model_result) -> ModelMatrixCategories:
-        psubs = load_psubs(model_result)
-        return classify_matrix(psubs)
 
 
 # a rich dataclass to store bound violations, ISCL matrices, etc., besides identifiability

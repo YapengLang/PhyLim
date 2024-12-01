@@ -6,7 +6,7 @@ from typing import Union
 
 from cogent3.core.tree import PhyloNode
 
-from phylim.__init__ import __version__
+from phylim._version import __version__
 from phylim.classify_matrix import (
     CHAINSAW,
     IDENTITY,

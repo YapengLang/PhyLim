@@ -1,6 +1,6 @@
 import dataclasses
 
-from phylim.__init__ import __version__
+from phylim._version import __version__
 
 
 @dataclasses.dataclass(slots=True)

@@ -7,12 +7,14 @@ from cogent3.util.deserialise import deserialise_object
 from cogent3.util.table import Table
 from numpy import allclose
 
-from phylim.apps import (
-    PhyloLimitRec,
+from phylim import (
     check_fit_boundary,
     classify_model_psubs,
     load_param_values,
     load_psubs,
+)
+from phylim.apps import (
+    PhyloLimitRec,
     phylim,
     phylim_tree_to_likelihoodfunction,
 )
