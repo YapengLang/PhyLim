@@ -42,6 +42,18 @@ Then, you can easily check the identifiability by:
 True
 ```
 
+Overall, `phylim` can wrap all such information up
+
+```
+>>> res.to_table()
+```
+| Phylo Limits Record |  
+|----------------------|  
+| Source   | Model Name | Identifiable | Has Boundary Values | Version  |  
+|----------|------------|--------------|----------------------|----------|  
+| Unknown  | GTR        | True         | True                 | 2024.9.20 | 
+
+
 <details>
 <summary>Label all transition probability matrices in a model fit</summary>
 
@@ -59,7 +71,9 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 </details>
 
 
-## Check if all parameter fits are within the boundary
+<details>
+<summary>Check if all parameter fits are within the boundary</summary>
+
 
 ```
 >>> from phylim import check_fit_boundary
@@ -70,12 +84,4 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 {'source': 'unknown', 'vio': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'version': '2024.9.20'}
 ```
 
-## Overall, `phylim` can wrap all such information up
-
-```
->>> check = get_app("phylim")
->>> record = check(result)
->>> record.to_rich_dict()
-{'source': 'unknown', 'identifiability': True, 'strict': False, 'message': None, 'version': '2024.9.20', 'model_name': 'GTR', 'boundary_values': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'ISCL_mcats': {}}
-```
-
+</details>
