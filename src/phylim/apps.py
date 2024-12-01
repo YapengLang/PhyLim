@@ -11,13 +11,9 @@ from cogent3.evolve import predicate, substitution_model
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.table import Table
 
-from phylo_limits.__init__ import __version__
-from phylo_limits.check_boundary import (
-    BoundsViolation,
-    ParamRules,
-    check_boundary,
-)
-from phylo_limits.classify_matrix import (
+from phylim.__init__ import __version__
+from phylim.check_boundary import BoundsViolation, ParamRules, check_boundary
+from phylim.classify_matrix import (
     CHAINSAW,
     DLC,
     IDENTITY,
@@ -28,10 +24,7 @@ from phylo_limits.classify_matrix import (
     ModelPsubs,
     classify_matrix,
 )
-from phylo_limits.eval_identifiability import (
-    IdentCheckRes,
-    eval_identifiability,
-)
+from phylim.eval_identifiability import IdentCheckRes, eval_identifiability
 
 
 def load_psubs(model_result: model_result) -> ModelPsubs:

@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "phylo_limits"
+name = "phylim"
 authors = [{name = "Yapeng Lang", email = "u7181074@anu.edu.au"}]
 keywords = ["biology", "genomics", "statistics", "phylogeny", "evolution", "bioinformatics"]
 readme = "README.md"
@@ -84,4 +84,4 @@ multi_line_output=3
 use_parentheses=true
 
 [project.entry-points."cogent3.app"]
-phylo_limits = "phylo_limits.apps:phylo_limits"
+phylim = "phylim.apps:phylim"

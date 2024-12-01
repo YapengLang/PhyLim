@@ -6,8 +6,8 @@ from typing import Union
 
 from cogent3.core.tree import PhyloNode
 
-from phylo_limits.__init__ import __version__
-from phylo_limits.classify_matrix import (
+from phylim.__init__ import __version__
+from phylim.classify_matrix import (
     CHAINSAW,
     IDENTITY,
     LIMIT,

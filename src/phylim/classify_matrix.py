@@ -8,7 +8,7 @@ from cogent3.util.dict_array import DictArray
 from cogent3.util.table import Table
 from numpy import allclose, eye, ndarray, tile
 
-from phylo_limits.__init__ import __version__
+from phylim.__init__ import __version__
 
 
 class MatrixCategory(Enum):

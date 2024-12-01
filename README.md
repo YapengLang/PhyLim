@@ -1,12 +1,12 @@
-# phylo-limits: a phylogenetic limit evaluation library built on [cogent3](https://cogent3.org/)
+# phylim: a phylogenetic limit evaluation library built on [cogent3](https://cogent3.org/)
 
-phylo-limits evaluates the identifiability when estimating the phylogenetic tree using the Markov model. The identifiability is the key condition of the Markov model used in phylogenetics to fulfil consistency. Establishing identifiability relies on the organisation of five types of transition probability matrices on a phylogenetic tree. phylo-limits provides a quick method to check the identifiability of a model fit, where we developed a main [cogent3 app](https://cogent3.org/doc/app/index.html), `check_identifiability`. 
+phylim evaluates the identifiability when estimating the phylogenetic tree using the Markov model. The identifiability is the key condition of the Markov model used in phylogenetics to fulfil consistency. Establishing identifiability relies on the organisation of five types of transition probability matrices on a phylogenetic tree. phylim provides a quick method to check the identifiability of a model fit, where we developed a main [cogent3 app](https://cogent3.org/doc/app/index.html), `check_identifiability`. 
 
-The following content will demonstrate how to set up phylo-limits and give some tutorials on `check_identifiability` and other associated apps.
+The following content will demonstrate how to set up phylim and give some tutorials on `check_identifiability` and other associated apps.
 
 ## Installation
 
-```pip install phylo-limits```
+```pip install phylim```
 
 Let's see if it has been done successfully. In the package directory:
 
@@ -61,10 +61,10 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 {'source': 'unknown', 'vio': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'version': '2024.9.20'}
 ```
 
-## Overall, `generate_phylo_limit_record` can wrap all such information up
+## Overall, `generate_phylim_record` can wrap all such information up
 
 ```
->>> check = get_app("generate_phylo_limit_record")
+>>> check = get_app("generate_phylim_record")
 >>> record = check(result)
 >>> record.to_rich_dict()
 {'source': 'unknown', 'identifiability': True, 'strict': False, 'message': None, 'version': '2024.9.20', 'model_name': 'GTR', 'boundary_values': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'ISCL_mcats': {}}

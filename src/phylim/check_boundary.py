@@ -1,6 +1,6 @@
 import dataclasses
 
-from phylo_limits.__init__ import __version__
+from phylim.__init__ import __version__
 
 
 @dataclasses.dataclass(slots=True)
