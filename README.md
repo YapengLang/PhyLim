@@ -47,11 +47,12 @@ Overall, `phylim` can wrap all such information up
 ```
 >>> res.to_table()
 ```
-| Phylo Limits Record |  
-|----------------------|  
-| Source   | Model Name | Identifiable | Has Boundary Values | Version  |  
-|----------|------------|--------------|----------------------|----------|  
-| Unknown  | GTR        | True         | True                 | 2024.9.20 | 
+|                           Phylo Limits Record                            |
+|-------------------------------------------------------------------------|
+| Source   | Model Name | Identifiable | Has Boundary Values | Version   |
+|----------|------------|--------------|----------------------|-----------|
+| Unknown  | GTR        | True         | True                 | 2024.9.20 |
+
 
 
 <details>
