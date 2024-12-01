@@ -36,35 +36,44 @@ If you fit a model to an alignment and get the model result:
 Then, you can easily check the identifiability by:
 
 ```
->>> ident_check = get_app("check_identifiability")
->>> ident_check(result)
+>>> ident_check = get_app("phylim")
+>>> record = ident_check(result)
+>>> record.is_identifiable
 True
 ```
 
-## Label all transition probability matrices in a model fit
+<details>
+<summary>Label all transition probability matrices in a model fit</summary>
 
 You can call `classify_model_psubs` to give the category of all the matrices:
 
 ```
->>> label_psubs = get_app("classify_model_psubs")
->>> labelled = label_psubs(result)
+>>> from phylim import classify_model_psubs
+
+>>> app = classify_model_psubs()
+>>> labelled = app(result)
 >>> labelled.to_rich_dict()
 {'source': 'unknown', 'mcats': {(np.str_('Gorilla'),): 'DLC', (np.str_('Human'),): 'DLC', (np.str_('Mouse'),): 'DLC'}, 'version': '2024.9.20'}
 ```
 
+</details>
+
+
 ## Check if all parameter fits are within the boundary
 
 ```
->>> check_bound = get_app("check_fit_boundary")
->>> violations = check_bound(result)
+>>> from phylim import check_fit_boundary
+
+>>> app = check_fit_boundary()
+>>> violations = app(result)
 >>> violations.to_rich_dict()
 {'source': 'unknown', 'vio': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'version': '2024.9.20'}
 ```
 
-## Overall, `generate_phylim_record` can wrap all such information up
+## Overall, `phylim` can wrap all such information up
 
 ```
->>> check = get_app("generate_phylim_record")
+>>> check = get_app("phylim")
 >>> record = check(result)
 >>> record.to_rich_dict()
 {'source': 'unknown', 'identifiability': True, 'strict': False, 'message': None, 'version': '2024.9.20', 'model_name': 'GTR', 'boundary_values': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'ISCL_mcats': {}}
