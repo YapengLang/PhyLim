@@ -16,7 +16,7 @@ Let's see if it has been done successfully. In the package directory:
 
 If you fit a model to an alignment and get the model result:
 
-```
+```python
 >>> from cogent3 import get_app, make_aligned_seqs
 
 >>> algn = make_aligned_seqs(
@@ -34,7 +34,7 @@ If you fit a model to an alignment and get the model result:
 
 You can easily check the identifiability by:
 
-```
+```python
 >>> app_ident_check = get_app("phylim")
 
 >>> record = app_ident_check(result)
@@ -44,32 +44,9 @@ True
 
 The `phylim` app wraps all information about phylogenetic limits.
 
+```python
+>>> record
 ```
->>> res.to_table()
-```
-
-<div class="c3table">
-
-<style>
-.c3table table {margin: 10px 0;}
-.c3table tr:last-child {border-bottom: 1px solid #000;} 
-.c3table tr > th {text-align: left; padding: 0 5px;}
-.c3table tr > td {text-align: left; padding: 5px;}
-.c3table tr:nth-child(even) {background: #f7f7f7 !important;}
-.c3table .ellipsis {background: rgba(0, 0, 0, .01);}
-.c3table .index {background: rgba(161, 195, 209, 0.0); margin: 10px; font-weight: 600;}
-.c3table .head_cell {background: rgba(161, 195, 209, 0.75); font-weight: bold; text-align: center;}
-.c3table caption {color: rgb(250, 250, 250); background: rgba(30, 140, 200, 1); padding: 3px; white-space: nowrap; caption-side: top;}
-.c3table .cell_title {font-weight: bold;}
-.c3col_left { text-align: left !important; display: block;}
-.c3col_right { text-align: right !important; display: block;}
-.c3col_center { text-align: center !important; display: block;}
-</style>
-
-<table>
-
-<caption>
-<span class="cell_title">Phylo Limits Record</span>
 </caption>
 <thead class="head_cell">
 <th>source</th><th>model name</th><th>identifiable</th><th>has boundary values</th><th>version</th>
@@ -81,6 +58,7 @@ The `phylim` app wraps all information about phylogenetic limits.
 
 </div>
 
+You can also use features like classifying all matrices or checking boundary values in a model fit.
 
 <details>
 <summary>Label all transition probability matrices in a model fit</summary>
@@ -90,10 +68,9 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 ```python
 >>> from phylim import classify_model_psubs
 
->>> app = classify_model_psubs()
->>> labelled = app(result)
+>>> labelled = classify_model_psubs(result)
 >>> labelled.to_rich_dict()
-{'source': 'unknown', 'mcats': {(np.str_('Gorilla'),): 'DLC', (np.str_('Human'),): 'DLC', (np.str_('Mouse'),): 'DLC'}, 'version': '2024.9.20'}
+{'source': 'foo', 'mcats': {(np.str_('Gorilla'),): 'DLC', (np.str_('Human'),): 'DLC', (np.str_('Mouse'),): 'DLC'}, 'version': '2024.9.20'}
 ```
 
 </details>
@@ -106,10 +83,9 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 ```
 >>> from phylim import check_fit_boundary
 
->>> app = check_fit_boundary()
->>> violations = app(result)
+>>> violations = check_fit_boundary(result)
 >>> violations.to_rich_dict()
-{'source': 'unknown', 'vio': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'version': '2024.9.20'}
+{'source': 'foo', 'vio': [{'par_name': 'C/T', 'init': np.float64(1.000000008361369e-06), 'lower': 1e-06, 'upper': 50}, {'par_name': 'A/T', 'init': np.float64(1.0000000181618708e-06), 'lower': 1e-06, 'upper': 50}], 'version': '2024.9.20'}
 ```
 
 </details>
