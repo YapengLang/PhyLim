@@ -106,7 +106,8 @@ phylim provides an app, `phylim_colour_edges`, which takes an edge-matrix catego
 >>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
 >>> app_colour_edge(tree)
 ```
-[tree1]
+
+![tree1](https://figshare.com/articles/figure/tree2_png/27936765)
 
 You can also color edges with a user-defined edge-matrix category map: 
 
@@ -118,7 +119,7 @@ You can also color edges with a user-defined edge-matrix category map:
 >>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
 >>> app_colour_edge(tree)
 ```
-[tree2]
+![tree2](https://figshare.com/articles/figure/tree1_png/27936768?file=50903022)
 
 
 ## Check identifiability for piqtree2
