@@ -161,9 +161,7 @@ class phylim_colour_edges:
 
     def __init__(
         self,
-        edge_to_cat: Union[
-            dict[tuple[str, ...], MatrixCategory], ModelMatrixCategories
-        ],
+        edge_to_cat: Union[dict[str, MatrixCategory], ModelMatrixCategories],
         cat_to_colour: dict[MatrixCategory, str] = {
             DLC: "#000000",
             CHAINSAW: "#ED1B0C",
@@ -175,6 +173,7 @@ class phylim_colour_edges:
         width: int = 600,
         height: int = 600,
         scale_position: str = "top right",
+        style: str = "square",
     ) -> None:  # pragma: no cover
         self._edge_to_cat = edge_to_cat
         self._cat_to_colour = cat_to_colour
@@ -182,14 +181,16 @@ class phylim_colour_edges:
         self._width = width
         self._height = height
         self._scale_position = scale_position
+        self._style = style
 
     def main(self, tree: PhyloNode) -> Dendrogram:  # pragma: no cover
-        fig = tree.get_figure(width=self._width, height=self._height)
+        fig = tree.get_figure(width=self._width, height=self._height, style=self._style)
         fig.scale_bar = self._scale_position
 
         mcat_map = collections.defaultdict(list)
         for k, v in self._edge_to_cat.items():
-            mcat_map[v].append(k[0])
+            mcat_map[v].append(k[0] if isinstance(k, tuple) else k)
+
         for mcat, edges in mcat_map.items():
             fig.style_edges(
                 edges=edges,
