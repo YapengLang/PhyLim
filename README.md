@@ -76,7 +76,7 @@ The `phylim` app wraps all information about phylogenetic limits.
         <td>brca1.fasta</td>
         <td>GTR</td>
         <td>True</td>
-        <td>False</td>
+        <td>True</td>
         <td>2024.9.20</td>
       </tr>
     </tbody>
