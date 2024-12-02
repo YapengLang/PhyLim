@@ -125,7 +125,7 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 <summary>Check if all parameter fits are within the boundary</summary>
 
 
-```
+```python
 >>> from phylim import check_fit_boundary
 
 >>> violations = check_fit_boundary(result)
