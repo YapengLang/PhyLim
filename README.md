@@ -91,6 +91,21 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 </details>
 
 
+## Check identifiability for piqtree2
+
+phylim provides an app, `phylim_tree_to_likelihoodfunction`, which allows you to build the likelihood function from a piqtree2 output tree.
+
+```python
+>>> from piqtree2 import build_tree
+
+>>> tree = build_tree(algn, model="GTR")
+>>> app_inverter = get_app("phylim_tree_to_likelihoodfunction")
+
+>>> result = app_inverter(tree)
+>>> app_ident_check(result)
+```
+
+
 ## Colour the edges for a phylogenetic tree based on matrix categories
 
 
@@ -107,7 +122,8 @@ phylim provides an app, `phylim_colour_edges`, which takes an edge-matrix catego
 >>> app_colour_edge(tree)
 ```
 
-![tree1](https://figshare.com/articles/figure/tree2_png/27936765)
+<img src="https://figshare.com/ndownloader/files/50903022" alt="tree1" width="400" />
+
 
 You can also color edges with a user-defined edge-matrix category map: 
 
@@ -119,19 +135,6 @@ You can also color edges with a user-defined edge-matrix category map:
 >>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
 >>> app_colour_edge(tree)
 ```
-![tree2](https://figshare.com/articles/figure/tree1_png/27936768?file=50903022)
 
+<img src="https://figshare.com/ndownloader/files/50903019" alt="tree1" width="400" />
 
-## Check identifiability for piqtree2
-
-phylim provides an app, `phylim_tree_to_likelihoodfunction`, which allows you to build the likelihood function from a piqtree2 output tree.
-
-```python
->>> from piqtree2 import build_tree
-
->>> tree = build_tree(algn, model="GTR")
->>> app_inverter = get_app("phylim_tree_to_likelihoodfunction")
-
->>> result = app_inverter(tree)
->>> app_ident_check(result)
-```
