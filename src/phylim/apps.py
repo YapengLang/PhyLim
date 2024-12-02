@@ -161,7 +161,9 @@ class phylim_colour_edges:
 
     def __init__(
         self,
-        edge_to_cat: dict[tuple[str, ...], MatrixCategory],
+        edge_to_cat: Union[
+            dict[tuple[str, ...], MatrixCategory], ModelMatrixCategories
+        ],
         cat_to_colour: dict[MatrixCategory, str] = {
             DLC: "#000000",
             CHAINSAW: "#ED1B0C",
