@@ -89,3 +89,48 @@ You can call `classify_model_psubs` to give the category of all the matrices:
 ```
 
 </details>
+
+
+## Colour the edges for a phylogenetic tree based on matrix categories
+
+
+If you obtain a model fit, phylim can visualise the tree with labeled matrices. 
+
+phylim provides an app, `phylim_colour_edges`, which takes an edge-matrix category map and colours the edges:
+
+```python
+>>> from phylim import classify_model_psubs
+
+>>> edge_to_cat = classify_model_psubs(result)
+>>> tree = result.tree
+>>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
+>>> app_colour_edge(tree)
+```
+[tree1]
+
+You can also color edges with a user-defined edge-matrix category map: 
+
+```python
+>>> from phylim.classify_matrix import SYMPATHETIC, DLC
+
+>>> edge_to_cat = {"A":SYMPATHETIC, "B":SYMPATHETIC, "C":DLC}
+
+>>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
+>>> app_colour_edge(tree)
+```
+[tree2]
+
+
+## Check identifiability for piqtree2
+
+phylim provides an app, `phylim_tree_to_likelihoodfunction`, which allows you to build the likelihood function from a piqtree2 output tree.
+
+```python
+>>> from piqtree2 import build_tree
+
+>>> tree = build_tree(algn, model="GTR")
+>>> app_inverter = get_app("phylim_tree_to_likelihoodfunction")
+
+>>> result = app_inverter(tree)
+>>> app_ident_check(result)
+```
