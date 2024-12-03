@@ -85,6 +85,10 @@ lines_between_types=1
 multi_line_output=3
 use_parentheses=true
 
+[project.urls]
+"Bug Tracker" = "https://github.com/HuttleyLab/PhyLim/issues"
+"Source Code" = "https://github.com/HuttleyLab/PhyLim"
+
 [project.entry-points."cogent3.app"]
 phylim = "phylim.apps:phylim"
 phylim_colour_edges = "phylim.apps:phylim_colour_edges"
