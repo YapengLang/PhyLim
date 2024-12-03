@@ -1,0 +1,101 @@
+name: Release
+
+on: [workflow_dispatch]
+
+jobs:
+  test:
+    name: "Python ${{ matrix.python-version }} (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+
+    steps:
+      - uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+
+      # Setup env
+      - uses: "actions/setup-python@v5"
+        with:
+            python-version: "${{ matrix.python-version }}"
+
+      - name: "Installs for ${{ matrix.python-version }}"
+        run: |
+          python --version
+          pip install --upgrade pip wheel setuptools flit
+          pip install --upgrade nox
+
+      - name: "Run nox for ${{ matrix.python-version }}"
+        run: "nox -s test-${{ matrix.python-version }}" 
+
+
+  build:
+    name: Build wheel and sdist
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install build dependency
+        run: |
+          pip install build
+          pip install --upgrade pip
+
+      - name: Build sdist and wheel
+        run: python -m build --wheel --sdist
+
+      - name: Upload sdist and wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: phylim-wheel-sdist
+          path: |
+            ./dist/*.whl
+            ./dist/*.tar.gz
+  
+  release_test:
+    name: Release to Test PyPI
+    needs: [build]
+    environment: release_test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download sdist and wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: phylim-wheel-sdist
+          path: ./dist
+
+      - name: Publish package distributions to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+  
+  release:
+    name: Release to PyPI
+    needs: release_test
+    environment: release
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download sdist and wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: phylim-wheel-sdist
+          path: ./dist
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
