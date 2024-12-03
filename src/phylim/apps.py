@@ -153,7 +153,7 @@ class phylim:
 
 
 @define_app
-class phylim_colour_edges:
+class phylim_style_tree:
     """colour edges based on the category of the psub
     Args:
         "edge_to_cat" keys are tree node names, values are category classes
@@ -204,7 +204,7 @@ class phylim_colour_edges:
 
 
 @define_app
-class phylim_tree_to_likelihoodfunction:
+class phylim_to_lf:
     """convert a cogent3 tree to a likelihood function
     Args:
         "tree" a cogent3 tree object

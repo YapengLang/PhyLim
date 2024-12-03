@@ -14,7 +14,7 @@ from phylim.apps import (
     load_param_values,
     load_psubs,
     phylim,
-    phylim_tree_to_likelihoodfunction,
+    phylim_to_lf,
 )
 from phylim.check_boundary import BoundsViolation, ParamRules
 from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
@@ -118,7 +118,7 @@ def test_check_fit_boundary():
 @pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree"])
 def test_convert_piqtree_to_lf(tree_name):
     tree = deserialise_object(f"{DATADIR}/piqtree2/{tree_name}.json")
-    converter = phylim_tree_to_likelihoodfunction()
+    converter = phylim_to_lf()
     lf = converter(tree)
     lf.set_alignment(_algn)
     assert allclose(lf.lnL, tree.params["lnL"])
