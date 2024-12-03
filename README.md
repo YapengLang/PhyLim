@@ -179,7 +179,7 @@ You can also colour edges using a user-defined edge-matrix category map, applica
 
 ```python
 >>> from cogent3 import make_tree
->>> from phylim.classify_matrix import SYMPATHETIC, DLC
+>>> from phylim import SYMPATHETIC, DLC
 
 >>> tree = make_tree("(A, B, C);")
 >>> edge_to_cat = {"A":SYMPATHETIC, "B":SYMPATHETIC, "C":DLC}
