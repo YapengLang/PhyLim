@@ -91,5 +91,5 @@ use_parentheses=true
 
 [project.entry-points."cogent3.app"]
 phylim = "phylim.apps:phylim"
-phylim_colour_edges = "phylim.apps:phylim_colour_edges"
-phylim_tree_to_likelihoodfunction = "phylim.apps:phylim_tree_to_likelihoodfunction"
+phylim_style_tree = "phylim.apps:phylim_style_tree"
+phylim_to_lf = "phylim.apps:phylim_to_lf"

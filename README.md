@@ -138,13 +138,13 @@ BoundsViolation(source='foo', vio=[{'par_name': 'C/T', 'init': np.float64(1.0000
 
 ## Check identifiability for piqtree2
 
-phylim provides an app, `phylim_tree_to_likelihoodfunction`, which allows you to build the likelihood function from a piqtree2 output tree.
+phylim provides an app, `phylim_to_lf`, which allows you to build the likelihood function from a piqtree2 output tree.
 
 ```python
 >>> from piqtree2 import build_tree
 
 >>> tree = build_tree(algn, model="GTR")
->>> app_inverter = get_app("phylim_tree_to_likelihoodfunction")
+>>> app_inverter = get_app("phylim_to_lf")
 
 >>> result = app_inverter(tree)
 >>> record = app_ident_check(result)
@@ -158,7 +158,7 @@ True
 
 If you obtain a model fit, phylim can visualise the tree with labelled matrices. 
 
-phylim provides an app, `phylim_colour_edges`, which takes an edge-matrix category map and colours the edges:
+phylim provides an app, `phylim_style_tree`, which takes an edge-matrix category map and colours the edges:
 
 ```python
 >>> from phylim import classify_model_psubs
@@ -166,7 +166,7 @@ phylim provides an app, `phylim_colour_edges`, which takes an edge-matrix catego
 >>> edge_to_cat = classify_model_psubs(result)
 >>> tree = result.tree
 
->>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
+>>> app_colour_edge = get_app("phylim_style_tree", edge_to_cat)
 >>> app_colour_edge(tree)
 ```
 
@@ -182,7 +182,7 @@ You can also colour edges using a user-defined edge-matrix category map, applica
 >>> tree = make_tree("(A, B, C);")
 >>> edge_to_cat = {"A":SYMPATHETIC, "B":SYMPATHETIC, "C":DLC}
 
->>> app_colour_edge = get_app("phylim_colour_edges", edge_to_cat)
+>>> app_colour_edge = get_app("phylim_style_tree", edge_to_cat)
 >>> app_colour_edge(tree)
 ```
 
