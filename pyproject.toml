@@ -4,7 +4,10 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "phylim"
-authors = [{name = "Yapeng Lang", email = "u7181074@anu.edu.au"}]
+authors = [
+    {name = "Yapeng Lang", email = "u7181074@anu.edu.au"},
+    {name = "Gavin Huttley", email = "Gavin.Huttley@anu.edu.au"},
+    ]
 keywords = ["biology", "genomics", "statistics", "phylogeny", "evolution", "bioinformatics"]
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -24,7 +27,7 @@ classifiers = [
 
 dynamic = ["version", "description"]
 
-[project.sdist]
+[tool.flit.sdist]
 include = ["src/*", "pyproject.toml"]
 
 
