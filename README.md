@@ -30,7 +30,7 @@ If you fit a model to an alignment and get the model result:
 ```python
 >>> from cogent3 import get_app, make_aligned_seqs
 
->>> algn = make_aligned_seqs(
+>>> aln = make_aligned_seqs(
 ...    {
 ...        "Human": "ATGCGGCTCGCGGAGGCCGCGCTCGCGGAG",
 ...        "Gorilla": "ATGCGGCGCGCGGAGGCCGCGCTCGCGGAG",
@@ -40,16 +40,16 @@ If you fit a model to an alignment and get the model result:
 ... )
 
 >>> app_fit = get_app("model", "GTR")
->>> result = app_fit(algn)
+>>> result = app_fit(aln)
 ```
 
 You can easily check the identifiability by:
 
 ```python
->>> app_ident_check = get_app("phylim")
+>>> checker = get_app("phylim")
 
->>> record = app_ident_check(result)
->>> record.is_identifiable
+>>> checked = checker(result)
+>>> checked.is_identifiable
 
 True
 ```
@@ -57,7 +57,7 @@ True
 The `phylim` app wraps all information about phylogenetic limits.
 
 ```python
->>> record
+>>> checked
 ```
 
 
@@ -78,7 +78,7 @@ The `phylim` app wraps all information about phylogenetic limits.
         <td>GTR</td>
         <td>True</td>
         <td>True</td>
-        <td>2024.9.20</td>
+        <td>2024.12.3.post2</td>
       </tr>
     </tbody>
   </table>
@@ -142,14 +142,15 @@ BoundsViolation(source='foo', vio=[{'par_name': 'C/T', 'init': np.float64(1.0000
 phylim provides an app, `phylim_to_lf`, which allows you to build the likelihood function from a piqtree2 output tree.
 
 ```python
->>> from piqtree2 import build_tree
+>>> phylo = get_app("piqtree_phylo", model="GTR")
+>>> tree = phylo(aln)
 
->>> tree = build_tree(algn, model="GTR")
->>> app_inverter = get_app("phylim_to_lf")
+>>> lf_from = get_app("phylim_to_lf")
+>>> result = lf_from(tree)
 
->>> result = app_inverter(tree)
->>> record = app_ident_check(result)
->>> record.is_identifiable
+>>> checker = get_app("phylim")
+>>> checked = checker(result)
+>>> checked.is_identifiable
 
 True
 ```
@@ -167,8 +168,8 @@ phylim provides an app, `phylim_style_tree`, which takes an edge-matrix category
 >>> edge_to_cat = classify_model_psubs(result)
 >>> tree = result.tree
 
->>> app_colour_edge = get_app("phylim_style_tree", edge_to_cat)
->>> app_colour_edge(tree)
+>>> tree_styler = get_app("phylim_style_tree", edge_to_cat)
+>>> tree_styler(tree)
 ```
 
 <img src="https://figshare.com/ndownloader/files/50903022" alt="tree1" width="400" />
@@ -183,9 +184,8 @@ You can also colour edges using a user-defined edge-matrix category map, applica
 >>> tree = make_tree("(A, B, C);")
 >>> edge_to_cat = {"A":SYMPATHETIC, "B":SYMPATHETIC, "C":DLC}
 
->>> app_colour_edge = get_app("phylim_style_tree", edge_to_cat)
->>> app_colour_edge(tree)
+>>> tree_styler = get_app("phylim_style_tree", edge_to_cat)
+>>> tree_styler(tree)
 ```
 
 <img src="https://figshare.com/ndownloader/files/50903019" alt="tree1" width="400" />
-
