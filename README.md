@@ -21,7 +21,7 @@ Let's see if it has been done successfully. In the package directory:
 
 ```pytest```
 
-Hope all tests passed! :blush:
+Hope all tests passed! :white_check_mark: :blush:
 
 ## Run the check of identifiability
 
@@ -78,7 +78,7 @@ The `phylim` app wraps all information about phylogenetic limits.
         <td>GTR</td>
         <td>True</td>
         <td>True</td>
-        <td>2024.12.3.post2</td>
+        <td>2025.1.12</td>
       </tr>
     </tbody>
   </table>
