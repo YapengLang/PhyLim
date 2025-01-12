@@ -1,5 +1,6 @@
 # phylim: a phylogenetic limit evaluation library built on [cogent3](https://cogent3.org/)
 [![Coverage Status](https://coveralls.io/repos/github/HuttleyLab/PhyLim/badge.svg?branch=main)](https://coveralls.io/github/HuttleyLab/PhyLim?branch=main)
+[![Release](https://github.com/HuttleyLab/PhyLim/actions/workflows/release.yml/badge.svg)](https://github.com/HuttleyLab/PhyLim/actions/workflows/release.yml)
 
 phylim evaluates the identifiability when estimating the phylogenetic tree using the Markov model. The identifiability is the key condition of the Markov model used in phylogenetics to fulfil consistency. 
 
