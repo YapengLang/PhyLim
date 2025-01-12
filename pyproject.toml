@@ -92,4 +92,4 @@ use_parentheses=true
 [project.entry-points."cogent3.app"]
 phylim = "phylim.apps:phylim"
 phylim_style_tree = "phylim.apps:phylim_style_tree"
-phylim_to_lf = "phylim.apps:phylim_to_lf"
+phylim_to_model_result = "phylim.apps:phylim_to_model_result"

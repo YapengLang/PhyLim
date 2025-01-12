@@ -8,7 +8,6 @@ from cogent3.app.result import model_result
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
 from cogent3.evolve import predicate, substitution_model
-from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.util.table import Table
 
 from phylim._version import __version__
@@ -204,17 +203,17 @@ class phylim_style_tree:
 
 
 @define_app
-class phylim_to_lf:
-    """convert a cogent3 tree to a likelihood function
+class phylim_to_model_result:
+    """convert a cogent3 tree to a model_result object
     Args:
         "tree" a cogent3 tree object
     Return:
-        AlignmentLikelihoodFunction
+        model_result
     """
 
     excludes = ["length", "mprobs"]
 
-    def main(self, tree: PhyloNode) -> AlignmentLikelihoodFunction:
+    def main(self, tree: PhyloNode) -> model_result:
         params = tree.get_edge_vector()[0].params
         mprobs = tree.params["mprobs"]
 
@@ -225,4 +224,11 @@ class phylim_to_lf:
         lf = submodel.make_likelihood_function(tree, aligned=True)
         lf.set_motif_probs(mprobs)
 
-        return lf  # type: ignore # FIXME
+        result = model_result(
+            name=lf.name,
+            source="unknown",
+        )
+
+        result[lf.name] = lf
+
+        return result
