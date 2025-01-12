@@ -37,7 +37,7 @@ test = [
     "pytest-cov",
     "pytest-xdist",
     "nox",
-    "piqtree",
+    "piqtree; python_version>='3.10' and python_version <'3.13'",
 ]
 dev = [
     "black",
