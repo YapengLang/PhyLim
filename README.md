@@ -139,13 +139,13 @@ BoundsViolation(source='foo', vio=[{'par_name': 'C/T', 'init': np.float64(1.0000
 
 ## Check identifiability for piqtree2
 
-phylim provides an app, `phylim_to_lf`, which allows you to build the likelihood function from a piqtree2 output tree.
+phylim provides an app, `phylim_to_model_result`, which allows you to build the likelihood function from a piqtree2 output tree.
 
 ```python
 >>> phylo = get_app("piqtree_phylo", model="GTR")
 >>> tree = phylo(aln)
 
->>> lf_from = get_app("phylim_to_lf")
+>>> lf_from = get_app("phylim_to_model_result")
 >>> result = lf_from(tree)
 
 >>> checker = get_app("phylim")
