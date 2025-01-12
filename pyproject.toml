@@ -37,6 +37,7 @@ test = [
     "pytest-cov",
     "pytest-xdist",
     "nox",
+    "piqtree==0.4.0",
 ]
 dev = [
     "black",
