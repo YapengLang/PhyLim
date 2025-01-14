@@ -1,4 +1,5 @@
 import pathlib
+import sys
 
 import pytest
 
@@ -122,3 +123,16 @@ def test_convert_piqtree_to_model_result(tree_name):
     res = converter(tree)
     res.lf.set_alignment(_algn)
     assert allclose(res.lf.lnL, tree.params["lnL"])
+
+
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="Test not supported on Windows"
+)
+def test_piqtree_app():
+    phylo = get_app("piqtree_phylo", "GTR")
+    tree = phylo(_algn)
+    lf_from = get_app("phylim_to_model_result")
+    result = lf_from(tree)
+    checker = get_app("phylim")
+    checked = checker(result)
+    assert isinstance(checked, PhyloLimitRec) == True
