@@ -1,4 +1,5 @@
 import pathlib
+import sys
 
 import pytest
 
@@ -124,6 +125,9 @@ def test_convert_piqtree_to_model_result(tree_name):
     assert allclose(res.lf.lnL, tree.params["lnL"])
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"), reason="Test not supported on Windows"
+)
 def test_piqtree_app():
     phylo = get_app("piqtree_phylo", "GTR")
     tree = phylo(_algn)
