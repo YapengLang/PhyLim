@@ -137,4 +137,4 @@ def test_piqtree_app():
     result = lf_from(tree)
     checker = get_app("phylim")
     checked = checker(result)
-    assert isinstance(checked, PhyloLimitRec) == True
+    assert isinstance(checked, PhyloLimitRec)
