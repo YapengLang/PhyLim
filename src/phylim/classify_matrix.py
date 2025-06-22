@@ -5,7 +5,7 @@ from enum import Enum
 import numpy
 
 from cogent3.util.dict_array import DictArray
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 from numpy import allclose, eye, ndarray, tile
 
 from phylim._version import __version__

@@ -8,7 +8,7 @@ from cogent3.app.result import model_result
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
 from cogent3.evolve import predicate, substitution_model
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 
 from phylim._version import __version__
 from phylim.check_boundary import BoundsViolation, ParamRules, check_boundary

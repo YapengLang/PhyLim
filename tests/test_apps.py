@@ -5,7 +5,7 @@ import pytest
 
 from cogent3 import get_app, load_aligned_seqs
 from cogent3.util.deserialise import deserialise_object
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 from numpy import allclose
 
 from phylim.apps import (

@@ -3,7 +3,7 @@ import pathlib
 import numpy
 import pytest
 
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 
 from phylim.classify_matrix import (
     CHAINSAW,
