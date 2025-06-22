@@ -24,7 +24,9 @@ from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
 DATADIR = pathlib.Path(__file__).parent / "data"
 
 # set alignment for computing likelihood
-_algn = load_aligned_seqs(f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna")
+_algn = load_aligned_seqs(
+    f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna", new_type=True
+)
 
 _model_res = deserialise_object(
     f"{DATADIR}/eval_identifiability/unid_model_result.json"

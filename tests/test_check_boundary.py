@@ -74,5 +74,5 @@ def test_to_rich_dict_boundsviolation():
         ],
     )
     result = test_input.to_rich_dict()
-    assert isinstance(result, dict) == True
+    assert isinstance(result, dict)
     assert all(k in result for k in ["source", "vio", "version"])

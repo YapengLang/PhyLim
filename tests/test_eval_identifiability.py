@@ -332,7 +332,7 @@ def test_identifiabilitycheck_badmtx():
     assert isinstance(result, IdentCheckRes)
     assert result.violation_type == BADMTX
     assert result.names == {"3"}
-    assert result.is_identifiable == False
+    assert not result.is_identifiable
 
 
 def test_identifiabilitycheck_badnodes():
@@ -345,7 +345,7 @@ def test_identifiabilitycheck_badnodes():
     assert isinstance(result, IdentCheckRes)
     assert result.violation_type == BADNODES
     assert result.names == {"root"}
-    assert result.is_identifiable == False
+    assert not result.is_identifiable
 
 
 def test_to_rich_dict_identcheckres():
@@ -353,7 +353,7 @@ def test_to_rich_dict_identcheckres():
         source="foo", strict=False, names=None, violation_type=IDENTIFIABLE
     )
     result = test_input.to_rich_dict()
-    assert isinstance(result, dict) == True
+    assert isinstance(result, dict)
     assert all(
         k in result for k in ["source", "strict", "names", "violation_type", "version"]
     )

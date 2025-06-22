@@ -37,14 +37,14 @@ def break_path(path: list[str], msyms: set) -> list[set]:
     """break the path by msyms(the set of sympathetics)"""
     split_paths = []
     linked = set()
-    for i in range(len(path)):
-        if path[i] in msyms:
+    for item in path:
+        if item in msyms:
             if linked:
-                linked = linked | {path[i]}
+                linked = linked | {item}
                 split_paths.append(linked)
             linked = set()
         else:
-            linked = linked | {path[i]}
+            linked = linked | {item}
     if len(linked) > 1:
         split_paths.append(linked)
 
@@ -58,7 +58,7 @@ def find_intersection(list_split_paths: list[set]) -> list[set]:
     for i, v in enumerate(reachable):
         for j, k in enumerate(reachable[i + 1 :], i + 1):
             if v & k:
-                reachable[i] = v.union(reachable.pop(j))
+                reachable[i] = v | reachable.pop(j)
                 return find_intersection(reachable)
     return reachable
 
@@ -90,8 +90,7 @@ def eval_paths(mcats: dict[tuple[str, ...], MatrixCategory], tree: PhyloNode) ->
     for i in traversed:
         breaked_paths = breaked_paths + break_path(i, msyms)
 
-    bad_nodes = find_bad_nodes(find_intersection(breaked_paths), tips, nodes)
-    return bad_nodes
+    return find_bad_nodes(find_intersection(breaked_paths), tips, nodes)
 
 
 class ViolationType(Enum):
@@ -137,8 +136,7 @@ def eval_identifiability(
     Args:
         strict: controls the sensitivity for Identity matrix (I); if false, treat I as DLC.
     """
-    bad_mtx_names = eval_mcats(psubs.mcats, strict=strict)
-    if bad_mtx_names:
+    if bad_mtx_names := eval_mcats(psubs.mcats, strict=strict):
         return IdentCheckRes(
             source=psubs.source,
             strict=strict,

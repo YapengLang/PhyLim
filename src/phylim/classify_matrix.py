@@ -113,9 +113,7 @@ class ModelMatrixCategories:
             "matrix category",
         ]
         rows = []
-        for edge, mcat in self.items():
-            rows.append([edge[0], mcat.value])
-
+        rows.extend([edge[0], mcat.value] for edge, mcat in self.items())
         return Table(
             header=headers, data=rows, title="Substitution Matrices Categories"
         )
