@@ -14,16 +14,3 @@ def test(session):
         "-x",
         *session.posargs,
     )
-
-
-@nox.session(python=[f"3.{v}" for v in _py_versions])
-def testcov(session):
-    session.install(".[test]")
-    session.chdir("tests")
-    session.run(
-        "pytest",
-        "--cov-report",
-        "html",
-        "--cov",
-        "myproj",
-    )
