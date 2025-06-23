@@ -1,12 +1,14 @@
 # phylim: a phylogenetic limit evaluation library built on [cogent3](https://cogent3.org/)
 [![Coverage Status](https://coveralls.io/repos/github/HuttleyLab/PhyLim/badge.svg?branch=main)](https://coveralls.io/github/HuttleyLab/PhyLim?branch=main)
 [![Release](https://github.com/HuttleyLab/PhyLim/actions/workflows/release.yml/badge.svg)](https://github.com/HuttleyLab/PhyLim/actions/workflows/release.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15717906.svg)](https://doi.org/10.5281/zenodo.15717906)
+
 
 phylim evaluates the identifiability when estimating the phylogenetic tree using the Markov model. The identifiability is the key condition of the Markov model used in phylogenetics to fulfil consistency. 
 
 Establishing identifiability relies on the arrangement of specific types of transition probability matrices (e.g., DLC and sympathetic) while avoiding other types. A key concern arises when a tree does not meet the condition that, for each node, a path to a tip must exist where all matrices along the path are DLC. Such trees are not identifiable 🪚🎄! For instance, in the figure below, tree *T'* contains a node surrounded by a specific type of non-DLC matrix, rendering it non-identifiable. In contrast, compare *T'* with tree *T*.
 
-phylim provides a quick, handy method to check the identifiability of a model fit, where we developed a main [cogent3 app](https://cogent3.org/doc/app/index.html), `phylim`. phylim is compatible with [piqtree2](https://github.com/iqtree/piqtree2), a python library that exposes features from iqtree2.
+phylim provides a quick, handy method to check the identifiability of a model fit, where we developed a main [cogent3 app](https://cogent3.org/doc/app/index.html), `phylim`. phylim is compatible with [piqtree](https://github.com/iqtree/piqtree), a python library that exposes features from iqtree2.
 
 The following content will demonstrate how to set up phylim and give some tutorials on the main identifiability check app and other associated apps.
 
