@@ -11,8 +11,8 @@ authors = [
 keywords = ["biology", "genomics", "statistics", "phylogeny", "evolution", "bioinformatics"]
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.10,<3.13"
-dependencies = ["numpy", "cogent3"]
+requires-python = ">=3.11,<3.14"
+dependencies = ["numpy", "cogent3>=2025.5.8a8"]
 classifiers = [
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Science/Research",
@@ -20,9 +20,9 @@ classifiers = [
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ]
 
 dynamic = ["version", "description"]

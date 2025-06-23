@@ -5,7 +5,7 @@ from enum import Enum
 import numpy
 
 from cogent3.util.dict_array import DictArray
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 from numpy import allclose, eye, ndarray, tile
 
 from phylim._version import __version__
@@ -113,9 +113,7 @@ class ModelMatrixCategories:
             "matrix category",
         ]
         rows = []
-        for edge, mcat in self.items():
-            rows.append([edge[0], mcat.value])
-
+        rows.extend([edge[0], mcat.value] for edge, mcat in self.items())
         return Table(
             header=headers, data=rows, title="Substitution Matrices Categories"
         )

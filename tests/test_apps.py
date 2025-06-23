@@ -5,7 +5,7 @@ import pytest
 
 from cogent3 import get_app, load_aligned_seqs
 from cogent3.util.deserialise import deserialise_object
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 from numpy import allclose
 
 from phylim.apps import (
@@ -24,7 +24,9 @@ from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
 DATADIR = pathlib.Path(__file__).parent / "data"
 
 # set alignment for computing likelihood
-_algn = load_aligned_seqs(f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna")
+_algn = load_aligned_seqs(
+    f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna", new_type=True
+)
 
 _model_res = deserialise_object(
     f"{DATADIR}/eval_identifiability/unid_model_result.json"
@@ -135,4 +137,4 @@ def test_piqtree_app():
     result = lf_from(tree)
     checker = get_app("phylim")
     checked = checker(result)
-    assert isinstance(checked, PhyloLimitRec) == True
+    assert isinstance(checked, PhyloLimitRec)

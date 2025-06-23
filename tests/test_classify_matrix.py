@@ -3,7 +3,7 @@ import pathlib
 import numpy
 import pytest
 
-from cogent3.util.table import Table
+from cogent3.core.table import Table
 
 from phylim.classify_matrix import (
     CHAINSAW,
@@ -39,7 +39,7 @@ def test_is_identity(matrix_input, expected):
 @pytest.mark.repeat(10)
 def test_is_dlc(make_dlc, repeat):
     for _ in range(repeat):
-        assert is_dlc(make_dlc()) == True
+        assert is_dlc(make_dlc())
 
 
 @pytest.mark.repeat(10)
@@ -47,21 +47,20 @@ def test_is_dlc_close_elem(make_dlc, repeat):
     for _ in range(repeat):
         m = make_dlc()
         m[1, 0] = m[0, 0]
-        assert is_dlc(m) == False
+        assert not is_dlc(m)
 
 
 def test_is_dlc_all_rows_same(make_limit):
-    assert is_dlc(make_limit()) == False
+    assert not is_dlc(make_limit())
 
 
 def test_is_dlc_by_chainsaw(make_chainsaw):
-    assert is_dlc(make_chainsaw()) == False
+    assert not is_dlc(make_chainsaw())
 
 
 @pytest.mark.repeat(10)
 def test_is_chainsaw(make_chainsaw, repeat):
-    for _ in range(repeat):
-        assert is_chainsaw(make_chainsaw()) == True
+    assert all(is_chainsaw(make_chainsaw()) for _ in range(repeat))
 
 
 @pytest.mark.repeat(10)
@@ -69,31 +68,31 @@ def test_is_chainsaw_two_rows_same(make_dlc, repeat):
     for _ in range(repeat):
         m = make_dlc()
         m[0] = m[1]
-        assert is_chainsaw(m) == False
+        assert not is_chainsaw(m)
 
 
 def test_is_chainsaw_all_rows_same(make_limit):
-    assert is_chainsaw(make_limit()) == False
+    assert not is_chainsaw(make_limit())
 
 
 def test_is_chainsaw_by_dlc(make_dlc):
-    assert is_chainsaw(make_dlc()) == False
+    assert not is_chainsaw(make_dlc())
 
 
 def test_is_chainsaw_by_sym_empir():
     with open(f"{DATADIR}/matrices/sympathetic1.npy", "rb") as f:
         m = numpy.load(f)
-    assert is_chainsaw(m) == False
+    assert not is_chainsaw(m)
 
 
 def test_is_limit(make_limit):
-    assert is_limit(make_limit()) == True
+    assert is_limit(make_limit())
 
 
 def test_is_limit_by_sym_empir():
     with open(f"{DATADIR}/matrices/sympathetic1.npy", "rb") as f:
         m = numpy.load(f)
-    assert is_limit(m) == False
+    assert not is_limit(m)
 
 
 @pytest.mark.parametrize(
