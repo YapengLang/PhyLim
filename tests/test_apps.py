@@ -25,7 +25,7 @@ DATADIR = pathlib.Path(__file__).parent / "data"
 
 # set alignment for computing likelihood
 _algn = load_aligned_seqs(
-    f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna"
+    f"{DATADIR}/piqtree/four_otu.fasta", moltype="dna"
 )
 
 _model_res = deserialise_object(
@@ -119,8 +119,8 @@ def test_check_fit_boundary():
 
 
 @pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree"])
-def test_convert_piqtree_to_model_result(tree_name):
-    tree = deserialise_object(f"{DATADIR}/piqtree2/{tree_name}.json")
+def test_convert_piq_build_treeto_model_result(tree_name):
+    tree = deserialise_object(f"{DATADIR}/piqtree/{tree_name}.json")
     converter = phylim_to_model_result()
     res = converter(tree)
     res.lf.set_alignment(_algn)
@@ -131,7 +131,7 @@ def test_convert_piqtree_to_model_result(tree_name):
     sys.platform.startswith("win"), reason="Test not supported on Windows"
 )
 def test_piqtree_app():
-    phylo = get_app("piqtree_phylo", "GTR")
+    phylo = get_app("piq_build_tree", "GTR")
     tree = phylo(_algn)
     lf_from = get_app("phylim_to_model_result")
     result = lf_from(tree)
