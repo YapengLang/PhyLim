@@ -25,7 +25,7 @@ DATADIR = pathlib.Path(__file__).parent / "data"
 
 # set alignment for computing likelihood
 _algn = load_aligned_seqs(
-    f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna", new_type=True
+    f"{DATADIR}/piqtree2/four_otu.fasta", moltype="dna"
 )
 
 _model_res = deserialise_object(
