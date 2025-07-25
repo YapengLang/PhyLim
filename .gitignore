@@ -159,7 +159,8 @@ Thumbs.db.DS_Store
 
 #folder
 nbks
+working/
 
 #vscode settings
 .vscode/
-src/phylim/old_func.py
+
