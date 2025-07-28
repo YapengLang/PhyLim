@@ -42,15 +42,20 @@ def _(result: AlignmentLikelihoodFunction) -> AlignmentLikelihoodFunction:
 
 def load_psubs(lf: AlignmentLikelihoodFunction) -> ModelPsubs:
     """get psubs"""
+    algn = lf.get_param_value("alignment")
+    source = getattr(algn, "source", None) or "Unknown"
     return ModelPsubs(
-        source=lf.get_param_value("alignment").source, psubs=lf.get_all_psubs()
+        source=source,
+        psubs=lf.get_all_psubs(),
     )
 
 
 def load_param_values(lf: AlignmentLikelihoodFunction) -> ParamRules:
     """get non-topology param values"""
+    algn = lf.get_param_value("alignment")
+    source = getattr(algn, "source", None) or "Unknown"
     return ParamRules(
-        source=lf.get_param_value("alignment").source,
+        source=source,
         params=lf.get_param_rules(),
     )
 
