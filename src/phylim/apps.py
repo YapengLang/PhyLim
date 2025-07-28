@@ -1,14 +1,16 @@
 import collections
 import dataclasses
 
+from functools import singledispatch
 from typing import Union
 
 from cogent3.app.composable import define_app
 from cogent3.app.result import model_result
+from cogent3.core.table import Table
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
 from cogent3.evolve import predicate, substitution_model
-from cogent3.core.table import Table
+from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 
 from phylim._version import __version__
 from phylim.check_boundary import BoundsViolation, ParamRules, check_boundary
@@ -26,16 +28,35 @@ from phylim.classify_matrix import (
 from phylim.eval_identifiability import IdentCheckRes, eval_identifiability
 
 
-def load_psubs(model_result: model_result) -> ModelPsubs:
+@singledispatch
+def _get_lf(result: model_result) -> AlignmentLikelihoodFunction:
+    if len(result) != 1:
+        raise ValueError("Model result must contain exactly one likelihood function.")
+    return result.lf  # type: ignore
+
+
+@_get_lf.register
+def _(result: AlignmentLikelihoodFunction) -> AlignmentLikelihoodFunction:
+    return result
+
+
+def load_psubs(lf: AlignmentLikelihoodFunction) -> ModelPsubs:
     """get psubs"""
-    return ModelPsubs(source=model_result.source, psubs=model_result.lf.get_all_psubs())  # type: ignore
+    algn = lf.get_param_value("alignment")
+    source = getattr(algn, "source", None) or "Unknown"
+    return ModelPsubs(
+        source=source,
+        psubs=lf.get_all_psubs(),
+    )
 
 
-def load_param_values(model_result: model_result) -> ParamRules:
+def load_param_values(lf: AlignmentLikelihoodFunction) -> ParamRules:
     """get non-topology param values"""
+    algn = lf.get_param_value("alignment")
+    source = getattr(algn, "source", None) or "Unknown"
     return ParamRules(
-        source=model_result.source,
-        params=model_result.lf.get_param_rules(),  # type: ignore
+        source=source,
+        params=lf.get_param_rules(),
     )
 
 
@@ -45,8 +66,10 @@ class check_fit_boundary:
     This value is important as two clusters of fits divided by the value.
     """
 
-    def main(self, model_result: model_result) -> BoundsViolation:
-        params = load_param_values(model_result)
+    def main(
+        self, inference: model_result | AlignmentLikelihoodFunction
+    ) -> BoundsViolation:
+        params = load_param_values(_get_lf(inference))
         return check_boundary(params)
 
 
@@ -54,8 +77,10 @@ class check_fit_boundary:
 class classify_model_psubs:
     """labels all psubs in a given ModelPsubs object which has source info"""
 
-    def main(self, model_result: model_result) -> ModelMatrixCategories:
-        psubs = load_psubs(model_result)
+    def main(
+        self, inference: model_result | AlignmentLikelihoodFunction
+    ) -> ModelMatrixCategories:
+        psubs = load_psubs(_get_lf(inference))
         return classify_matrix(psubs)
 
 
@@ -132,19 +157,21 @@ class phylim:
     def __init__(self, strict: bool = False) -> None:
         self.strict = strict
 
-    def main(self, model_result: model_result) -> PhyloLimitRec:
-        tree = model_result.lf.tree  # type: ignore
+    def main(
+        self, inference: model_result | AlignmentLikelihoodFunction
+    ) -> PhyloLimitRec:
+        tree = _get_lf(inference).tree
 
         check_bound_app = check_fit_boundary()
         classify_psubs_app = classify_model_psubs()
 
-        boundary_values = check_bound_app(model_result).vio
-        psubs_labelled = classify_psubs_app(model_result)
+        boundary_values = check_bound_app(inference).vio
+        psubs_labelled = classify_psubs_app(inference)
         result = eval_identifiability(psubs_labelled, tree, self.strict)
 
         return PhyloLimitRec(
             check=result,
-            model_name=model_result.name,
+            model_name=inference.name,
             boundary_values=boundary_values,
             nondlc_and_identity={
                 k: v for k, v in psubs_labelled.items() if v is not DLC

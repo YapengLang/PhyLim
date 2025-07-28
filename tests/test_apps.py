@@ -4,8 +4,8 @@ import sys
 import pytest
 
 from cogent3 import get_app, load_aligned_seqs
-from cogent3.util.deserialise import deserialise_object
 from cogent3.core.table import Table
+from cogent3.util.deserialise import deserialise_object
 from numpy import allclose
 
 from phylim.apps import (
@@ -32,37 +32,37 @@ _model_res = deserialise_object(
 
 
 def test_load_param_values():
-    result = load_param_values(_model_res)
-    assert isinstance(result, ParamRules) == True
+    result = load_param_values(_model_res.lf)
+    assert isinstance(result, ParamRules)
 
 
 def test_load_psubs():
-    result = load_psubs(_model_res)
-    assert isinstance(result, ModelPsubs) == True
+    result = load_psubs(_model_res.lf)
+    assert isinstance(result, ModelPsubs)
 
 
 def test_generate_record():
     # two I
     rec_app = phylim()  # default `strict` == F
     record = rec_app(_model_res)
-    assert isinstance(record, PhyloLimitRec) == True
-    assert record.check.strict == False
+    assert isinstance(record, PhyloLimitRec)
+    assert not record.check.strict
 
 
 def test_generate_record_strict_control():
     # two I
     rec_app = phylim(strict=True)  # set `strict`
     record = rec_app(_model_res)
-    assert isinstance(record, PhyloLimitRec) == True
-    assert record.check.strict == True
-    assert record.is_identifiable == False
+    assert isinstance(record, PhyloLimitRec)
+    assert record.check.strict
+    assert not record.is_identifiable
 
 
 def test_to_rich_dict_phylolimitrec():
     rec_app = phylim(strict=True)
     record = rec_app(_model_res)
     result = record.to_rich_dict()
-    assert isinstance(result, dict) == True
+    assert isinstance(result, dict)
     assert all(
         k in result
         for k in [
@@ -81,39 +81,39 @@ def test_to_rich_dict_phylolimitrec():
 def test_violation_type_phylolimitrec():
     rec_app = phylim()
     record = rec_app(_model_res)
-    assert record.violation_type == None
+    assert record.violation_type is None
 
 
 def test_has_bv_phylolimitrec():
     rec_app = phylim()
     record = rec_app(_model_res)
-    assert record.has_BV == True
+    assert record.has_BV
 
 
 def test_to_table_phylolimitrec():
     rec_app = phylim()
     record = rec_app(_model_res)
     result = record.to_table()
-    assert isinstance(result, Table) == True
+    assert isinstance(result, Table)
 
 
 def test_repr_html_phylolimitrec():
     rec_app = phylim()
     record = rec_app(_model_res)
     result = record._repr_html_()
-    assert isinstance(result, str) == True
+    assert isinstance(result, str)
 
 
 def test_classify_model_psubs():
     check_app = classify_model_psubs()
     res = check_app(_model_res)
-    assert isinstance(res, ModelMatrixCategories) == True
+    assert isinstance(res, ModelMatrixCategories)
 
 
 def test_check_fit_boundary():
     check_app = check_fit_boundary()
     res = check_app(_model_res)
-    assert isinstance(res, BoundsViolation) == True
+    assert isinstance(res, BoundsViolation)
 
 
 @pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree"])
