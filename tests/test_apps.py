@@ -32,12 +32,12 @@ _model_res = deserialise_object(
 
 
 def test_load_param_values():
-    result = load_param_values(_model_res)
+    result = load_param_values(_model_res.lf)
     assert isinstance(result, ParamRules)
 
 
 def test_load_psubs():
-    result = load_psubs(_model_res)
+    result = load_psubs(_model_res.lf)
     assert isinstance(result, ModelPsubs)
 
 
