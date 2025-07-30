@@ -139,6 +139,8 @@ BoundsViolation(source='foo', vio=[{'par_name': 'C/T', 'init': np.float64(1.0000
 
 </details>
 
+❗For users who want to check identifiability on a model with multiple likelihood functions (e.g. **split codon model**), please check https://github.com/HuttleyLab/PhyLim/issues/23#issuecomment-3125670158
+
 
 ## Check identifiability for piqtree
 
@@ -157,6 +159,8 @@ phylim provides an app, `phylim_to_model_result`, which allows you to build the 
 
 True
 ```
+
+
 
 
 ## Colour the edges for a phylogenetic tree based on matrix categories
