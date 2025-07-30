@@ -2,7 +2,6 @@ import pathlib
 import sys
 
 import pytest
-
 from cogent3 import get_app, load_aligned_seqs
 from cogent3.core.table import Table
 from cogent3.util.deserialise import deserialise_object
@@ -21,7 +20,6 @@ from phylim.apps import (
 from phylim.check_boundary import BoundsViolation, ParamRules
 from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
 
-
 DATADIR = pathlib.Path(__file__).parent / "data"
 
 # set alignment for computing likelihood
@@ -31,9 +29,24 @@ _model_res = deserialise_object(
     f"{DATADIR}/eval_identifiability/unid_model_result.json"
 )
 
+_model_res_split = deserialise_object(
+    f"{DATADIR}/split_codon_model_result/split_codon_model_result.json"
+)
+
 
 def test_get_lf():
     assert _get_lf(_model_res) is _model_res.lf
+
+
+def test_lf_get_lf():
+    assert _get_lf(_model_res.lf) is _model_res.lf
+
+
+def test_get_lf_multiple():
+    with pytest.raises(
+        ValueError, match="Model result must contain exactly one likelihood function."
+    ):
+        _get_lf(_model_res_split)
 
 
 def test_load_param_values():
