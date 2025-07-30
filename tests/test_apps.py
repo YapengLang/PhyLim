@@ -10,6 +10,7 @@ from numpy import allclose
 
 from phylim.apps import (
     PhyloLimitRec,
+    _get_lf,
     check_fit_boundary,
     classify_model_psubs,
     load_param_values,
@@ -29,6 +30,10 @@ _algn = load_aligned_seqs(f"{DATADIR}/piqtree/four_otu.fasta", moltype="dna")
 _model_res = deserialise_object(
     f"{DATADIR}/eval_identifiability/unid_model_result.json"
 )
+
+
+def test_get_lf():
+    assert _get_lf(_model_res) is _model_res.lf
 
 
 def test_load_param_values():
