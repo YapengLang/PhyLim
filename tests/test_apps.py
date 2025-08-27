@@ -2,7 +2,10 @@ import pathlib
 import sys
 
 import pytest
+
 from cogent3 import get_app, load_aligned_seqs
+from cogent3.app.composable import NotCompleted
+from cogent3.app.result import model_result
 from cogent3.core.table import Table
 from cogent3.util.deserialise import deserialise_object
 from numpy import allclose
@@ -15,10 +18,12 @@ from phylim.apps import (
     load_param_values,
     load_psubs,
     phylim,
+    phylim_filter,
     phylim_to_model_result,
 )
 from phylim.check_boundary import BoundsViolation, ParamRules
 from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
+
 
 DATADIR = pathlib.Path(__file__).parent / "data"
 
@@ -154,3 +159,15 @@ def test_piqtree_app():
     checker = get_app("phylim")
     checked = checker(result)
     assert isinstance(checked, PhyloLimitRec)
+
+
+def test_phylim_filter_app_pass():
+    filter_app = phylim_filter(strict=True)
+    result1 = filter_app(_model_res)
+    assert isinstance(result1, NotCompleted)
+
+
+def test_phylim_filter_app_fail():
+    filter_app = phylim_filter(strict=False)
+    result2 = filter_app(_model_res)
+    assert isinstance(result2, model_result)
