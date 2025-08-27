@@ -4,7 +4,9 @@ import dataclasses
 from functools import singledispatch
 from typing import Union
 
-from cogent3.app.composable import define_app
+from cogent3 import get_app
+from cogent3.app.composable import NotCompleted, define_app
+from cogent3.app.data_store import DataMember
 from cogent3.app.result import model_result
 from cogent3.core.table import Table
 from cogent3.core.tree import PhyloNode
@@ -260,3 +262,39 @@ class phylim_to_model_result:
         result[lf.name] = lf
 
         return result
+
+
+@define_app
+class phylim_filter:
+    """post-checking fitted model based on phylim
+    Args:
+        "strict" controls the sensitivity for Identity matrix (I); if false,
+        treat I as DLC.
+    """
+
+    def __init__(self, strict: bool = False) -> None:
+        self.strict = strict
+
+    def main(self, memb: DataMember) -> Union[model_result, NotCompleted]:
+        loader = get_app("load_db")
+        result = loader(memb)
+        if isinstance(result, NotCompleted):
+            return result
+        if not isinstance(result, model_result):
+            return NotCompleted(
+                type="ERROR",
+                origin="phylim_filter",
+                message=f"Loaded object with id {memb.unique_id} is not a model_result.",
+            )
+        phylim_app = phylim(strict=self.strict)
+        record = phylim_app(result)
+        return (
+            result
+            if record.is_identifiable
+            else NotCompleted(
+                type="FAIL",
+                origin="phylim_filter",
+                message=f"Model {result.name} is not identifiable.",
+                source=result.source,
+            )
+        )
