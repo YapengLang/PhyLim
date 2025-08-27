@@ -4,9 +4,7 @@ import dataclasses
 from functools import singledispatch
 from typing import Union
 
-from cogent3 import get_app
 from cogent3.app.composable import NotCompleted, define_app
-from cogent3.app.data_store import DataMember
 from cogent3.app.result import model_result
 from cogent3.core.table import Table
 from cogent3.core.tree import PhyloNode
@@ -275,26 +273,16 @@ class phylim_filter:
     def __init__(self, strict: bool = False) -> None:
         self.strict = strict
 
-    def main(self, memb: DataMember) -> Union[model_result, NotCompleted]:
-        loader = get_app("load_db")
-        result = loader(memb)
-        if isinstance(result, NotCompleted):
-            return result
-        if not isinstance(result, model_result):
-            return NotCompleted(
-                type="ERROR",
-                origin="phylim_filter",
-                message=f"Loaded object with id {memb.unique_id} is not a model_result.",
-            )
+    def main(self, model_result: model_result) -> Union[model_result, NotCompleted]:
         phylim_app = phylim(strict=self.strict)
-        record = phylim_app(result)
+        record = phylim_app(model_result)
         return (
-            result
+            model_result
             if record.is_identifiable
             else NotCompleted(
                 type="FAIL",
                 origin="phylim_filter",
-                message=f"Model {result.name} is not identifiable.",
-                source=result.source,
+                message=f"Model {model_result.name} on {model_result.source} is not identifiable.",
+                source=model_result.source,
             )
         )
