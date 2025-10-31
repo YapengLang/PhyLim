@@ -252,12 +252,11 @@ class phylim_to_model_result:
         mprobs = tree.params["mprobs"]
 
         # build predicates, excluding length and mprobs
-        predicates = [
-            predicate.parse(k) for k in params.keys() if k not in self.excludes
-        ]
+        predicates = [k for k in params.keys() if k not in self.excludes]
 
         # decide model type based on number of rates/predicates
         if len(predicates) < 6:
+            predicates = [predicate.parse(k) for k in predicates]
             submodel = substitution_model.TimeReversibleNucleotide(
                 predicates=predicates
             )
@@ -281,10 +280,12 @@ class phylim_to_model_result:
     def _gn_constructor(
         self, predicates: list
     ) -> ns_substitution_model.NonReversibleNucleotide:
+        if "T/G" in predicates:
+            predicates.remove("T/G")
         predicates = [
-            MotifChange(a, b, forward_only=True).aliased(alias)
-            for alias in predicates
-            for a, b in [alias.split("/")]
+            MotifChange(a, b, forward_only=True)
+            for pred_str in predicates
+            for a, b in [pred_str.split("/")]
         ]
 
         required = {
