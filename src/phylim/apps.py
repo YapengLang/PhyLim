@@ -239,7 +239,8 @@ class phylim_to_model_result:
         model_result
     Notes:
         this app support only UNREST (gn) model,
-        and GTR model (or its degenerated forms, like HKY85, JC69, etc).
+        and GTR model (or its degenerated forms, like HKY85, JC69, etc)
+        this app assume tree object derived from piqtree
     """
 
     excludes = ["length", "mprobs"]
