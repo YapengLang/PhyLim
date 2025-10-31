@@ -160,7 +160,29 @@ phylim provides an app, `phylim_to_model_result`, which allows you to build the 
 True
 ```
 
+A pipeline for checking identifiability for trees from piqtree:
 
+```python
+>>> from pathlib import Path
+>>> from cogent3 import load_aligned_seqs
+
+>>> build_tree = get_app("piq_build_tree", model="UNREST")
+>>> aln_dir = Path("turtle_partitions/") 
+>>> trees = []
+>>> for aln_file in aln_dir.glob("*.fa"):
+>>>   aln = load_aligned_seqs(aln_file,
+                              moltype="dna")
+>>>   trees.append(build_tree(aln))
+
+# TODO: store trees somewhere
+>>> inds = open_database(...)
+>>> outds = open_database(...)
+>>> lf_from = get_app("phylim_to_model_result")
+>>> checker = get_app("phylim_filter")
+>>> store = get_app("<storeapp>")
+>>> process = lf_from + checker + store
+>>> process.apply_to(inds)
+```
 
 
 ## Colour the edges for a phylogenetic tree based on matrix categories
