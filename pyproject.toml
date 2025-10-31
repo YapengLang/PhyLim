@@ -57,6 +57,9 @@ markers = [
 ]
 addopts = ["--strict-config", "-ra"]
 testpaths = "tests"
+filterwarnings = [
+    "ignore:Outdated tree json.*:UserWarning"
+]
 
 [tool.black]
 line-length = 88
@@ -85,6 +88,7 @@ lines_after_imports=2
 lines_between_types=1
 multi_line_output=3
 use_parentheses=true
+
 
 [project.urls]
 "Bug Tracker" = "https://github.com/HuttleyLab/PhyLim/issues"
