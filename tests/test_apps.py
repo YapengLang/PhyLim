@@ -2,7 +2,6 @@ import pathlib
 import sys
 
 import pytest
-
 from cogent3 import get_app, load_aligned_seqs
 from cogent3.app.composable import NotCompleted
 from cogent3.app.result import model_result
@@ -24,11 +23,11 @@ from phylim.apps import (
 from phylim.check_boundary import BoundsViolation, ParamRules
 from phylim.classify_matrix import ModelMatrixCategories, ModelPsubs
 
-
 DATADIR = pathlib.Path(__file__).parent / "data"
 
 # set alignment for computing likelihood
 _algn = load_aligned_seqs(f"{DATADIR}/piqtree/four_otu.fasta", moltype="dna")
+
 
 _model_res = deserialise_object(
     f"{DATADIR}/eval_identifiability/unid_model_result.json"
@@ -139,7 +138,7 @@ def test_check_fit_boundary():
     assert isinstance(res, BoundsViolation)
 
 
-@pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree"])
+@pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree", "unrest_tree"])
 def test_convert_piq_build_treeto_model_result(tree_name):
     tree = deserialise_object(f"{DATADIR}/piqtree/{tree_name}.json")
     converter = phylim_to_model_result()
