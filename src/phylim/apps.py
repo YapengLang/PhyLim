@@ -1,6 +1,5 @@
 import collections
 import dataclasses
-
 from functools import singledispatch
 from typing import Union
 
@@ -9,8 +8,9 @@ from cogent3.app.result import model_result
 from cogent3.core.table import Table
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
-from cogent3.evolve import predicate, substitution_model
+from cogent3.evolve import ns_substitution_model, predicate, substitution_model
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
+from cogent3.evolve.predicate import MotifChange
 
 from phylim._version import __version__
 from phylim.check_boundary import BoundsViolation, ParamRules, check_boundary
@@ -237,29 +237,64 @@ class phylim_to_model_result:
         "tree" a cogent3 tree object
     Return:
         model_result
+    Notes:
+        this app support only UNREST (gn) model,
+        and GTR model (or its degenerated forms, like HKY85, JC69, etc).
     """
 
     excludes = ["length", "mprobs"]
+
+    def __init__(self, stationarity: bool = True) -> None:
+        self.stationarity = stationarity
 
     def main(self, tree: PhyloNode) -> model_result:
         params = tree.get_edge_vector()[0].params
         mprobs = tree.params["mprobs"]
 
+        # build predicates, excluding length and mprobs
         predicates = [
             predicate.parse(k) for k in params.keys() if k not in self.excludes
         ]
-        submodel = substitution_model.TimeReversibleNucleotide(predicates=predicates)
+
+        # decide model type based on number of rates/predicates
+        if len(predicates) < 6:
+            submodel = substitution_model.TimeReversibleNucleotide(
+                predicates=predicates
+            )
+        else:
+            submodel = self._gn_constructor(predicates)
         lf = submodel.make_likelihood_function(tree, aligned=True)
         lf.set_motif_probs(mprobs)
 
+        # set to stationary as default
+        lf.set_param_rule("mprobs", is_constant=self.stationarity)
+
         result = model_result(
             name=lf.name,
-            source="unknown",
+            source="frompiqtree",
         )
 
         result[lf.name] = lf
 
         return result
+
+    def _gn_constructor(
+        self, predicates: list
+    ) -> ns_substitution_model.NonReversibleNucleotide:
+        predicates = [
+            MotifChange(a, b, forward_only=True).aliased(alias)
+            for alias in predicates
+            for a, b in [alias.split("/")]
+        ]
+
+        required = {
+            "optimise_motif_probs": False,
+            "predicates": predicates,
+        }
+        kwargs = {"recode_gaps": True, "model_gaps": False} | required
+        return ns_substitution_model.NonReversibleNucleotide(
+            **kwargs,
+        )
 
 
 @define_app
