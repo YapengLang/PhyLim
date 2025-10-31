@@ -283,7 +283,7 @@ class phylim_to_model_result:
         if "T/G" in predicates:
             predicates.remove("T/G")
         predicates = [
-            MotifChange(a, b, forward_only=True)
+            MotifChange(a, b, forward_only=True).aliased(pred_str)
             for pred_str in predicates
             for a, b in [pred_str.split("/")]
         ]
