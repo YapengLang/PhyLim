@@ -249,7 +249,7 @@ class phylim_to_model_result:
         self.stationarity = stationarity
 
     def main(self, tree: PhyloNode) -> model_result:
-        params = tree.get_edge_vector()[0].params
+        params = tree.get_root().params
         mprobs = tree.params["mprobs"]
 
         # build predicates, excluding length and mprobs
@@ -262,7 +262,7 @@ class phylim_to_model_result:
                 predicates=predicates
             )
         else:
-            submodel = self._gn_constructor(predicates)
+            submodel = _gn_constructor(predicates)
         lf = submodel.make_likelihood_function(tree, aligned=True)
         lf.set_motif_probs(mprobs)
 
@@ -271,23 +271,19 @@ class phylim_to_model_result:
 
         result = model_result(
             name=lf.name,
-            source="frompiqtree",
+            source=tree.source,
         )
 
         result[lf.name] = lf
 
         return result
 
-    def _gn_constructor(
-        self, predicates: list
+def _gn_constructor(
+        predicates: list
     ) -> ns_substitution_model.NonReversibleNucleotide:
-        if "T/G" in predicates:
-            predicates.remove("T/G")
-        predicates = [
-            MotifChange(a, b, forward_only=True).aliased(pred_str)
-            for pred_str in predicates
-            for a, b in [pred_str.split("/")]
-        ]
+        predicates = [MotifChange(*n.split("/"), forward_only=True).aliased(n)
+        for n, value in predicates.items() if value != 1]
+    
 
         required = {
             "optimise_motif_probs": False,
