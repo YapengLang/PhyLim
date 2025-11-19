@@ -278,21 +278,22 @@ class phylim_to_model_result:
 
         return result
 
-def _gn_constructor(
-        predicates: list
-    ) -> ns_substitution_model.NonReversibleNucleotide:
-        predicates = [MotifChange(*n.split("/"), forward_only=True).aliased(n)
-        for n, value in predicates.items() if value != 1]
-    
 
-        required = {
-            "optimise_motif_probs": False,
-            "predicates": predicates,
-        }
-        kwargs = {"recode_gaps": True, "model_gaps": False} | required
-        return ns_substitution_model.NonReversibleNucleotide(
-            **kwargs,
-        )
+def _gn_constructor(predicates: list) -> ns_substitution_model.NonReversibleNucleotide:
+    predicates = [
+        MotifChange(*n.split("/"), forward_only=True).aliased(n)
+        for n, value in predicates.items()
+        if value != 1
+    ]
+
+    required = {
+        "optimise_motif_probs": False,
+        "predicates": predicates,
+    }
+    kwargs = {"recode_gaps": True, "model_gaps": False} | required
+    return ns_substitution_model.NonReversibleNucleotide(
+        **kwargs,
+    )
 
 
 @define_app
