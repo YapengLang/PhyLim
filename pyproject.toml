@@ -49,6 +49,7 @@ dev = [
     "pytest-cov",
     "pytest-xdist",
     "nox",
+    "piqtree",
 ]
 
 [tool.pytest.ini_options]
