@@ -9,6 +9,7 @@ from cogent3.core.table import Table
 from cogent3.core.tree import PhyloNode
 from cogent3.draw.dendrogram import Dendrogram
 from cogent3.evolve import ns_substitution_model, predicate, substitution_model
+from cogent3.evolve.models import register_model
 from cogent3.evolve.parameter_controller import AlignmentLikelihoodFunction
 from cogent3.evolve.predicate import MotifChange
 
@@ -305,6 +306,7 @@ def _parse_params(result: PhyloNode) -> tuple[list[dict], list[str], dict]:
     return param_rules, predicate_names, motif_probs
 
 
+@register_model("nucleotide")
 def _build_reversible_model(
     predicate_names: list[str],
 ) -> substitution_model.TimeReversibleNucleotide:
@@ -312,6 +314,7 @@ def _build_reversible_model(
     return substitution_model.TimeReversibleNucleotide(predicates=predicates)
 
 
+@register_model("nucleotide")
 def _build_unrest_model(
     predicate_names: list,
 ) -> ns_substitution_model.NonReversibleNucleotide:
