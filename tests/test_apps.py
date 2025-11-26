@@ -138,6 +138,7 @@ def test_check_fit_boundary():
     assert isinstance(res, BoundsViolation)
 
 
+@pytest.mark.xfail(reason="need new version of piqtree")
 @pytest.mark.parametrize("model_name", ["HKY", "GTR", "UNREST"])
 def test_convert_piq_build_treeto_model_result(model_name):
     fit = get_app("piq_fit_tree", tree=_algn.quick_tree(), model=model_name)
@@ -148,6 +149,7 @@ def test_convert_piq_build_treeto_model_result(model_name):
     assert allclose(res.lf.lnL, tree.params["lnL"])
 
 
+@pytest.mark.xfail(reason="need new version of piqtree")
 @pytest.mark.skipif(
     sys.platform.startswith("win"), reason="Test not supported on Windows"
 )
