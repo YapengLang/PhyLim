@@ -138,15 +138,18 @@ def test_check_fit_boundary():
     assert isinstance(res, BoundsViolation)
 
 
-@pytest.mark.parametrize("tree_name", ["hky_tree", "gtr_tree", "unrest_tree"])
-def test_convert_piq_build_treeto_model_result(tree_name):
-    tree = deserialise_object(f"{DATADIR}/piqtree/{tree_name}.json")
+@pytest.mark.xfail(reason="need new version of piqtree")
+@pytest.mark.parametrize("model_name", ["HKY", "GTR", "UNREST"])
+def test_convert_piq_build_treeto_model_result(model_name):
+    fit = get_app("piq_fit_tree", tree=_algn.quick_tree(), model=model_name)
+    tree = fit(_algn)
     converter = phylim_to_model_result()
     res = converter(tree)
     res.lf.set_alignment(_algn)
     assert allclose(res.lf.lnL, tree.params["lnL"])
 
 
+@pytest.mark.xfail(reason="need new version of piqtree")
 @pytest.mark.skipif(
     sys.platform.startswith("win"), reason="Test not supported on Windows"
 )
