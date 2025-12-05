@@ -181,3 +181,13 @@ def test_delta_col():
     delta_col_dict = record.delta_col
     assert isinstance(delta_col_dict, dict)
     assert all(isinstance(v, float) for v in delta_col_dict.values())
+
+
+def test_calc_delta_col_tree_coverage():
+    tree = _model_res.lf.tree
+    expected_edge_count = len(list(tree.preorder(include_self=False)))
+    rec_app = phylim()
+    record = rec_app(_model_res)
+    delta_col_dict = record.delta_col
+
+    assert len(delta_col_dict) == expected_edge_count
